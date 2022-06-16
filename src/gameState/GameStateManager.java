@@ -4,9 +4,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameStateManager {
+public final class GameStateManager {
 
-    // TODO: MAYBE CHANGE FROM 'LIST' TO 'MAP'.
     private Map<GameStateID, GameState> gameStates;
     private GameState currentGameState;
 
@@ -16,14 +15,10 @@ public class GameStateManager {
 
     private void executeTransition(final GameState gameState) {
 
-        System.out.println("SET GAMESTATE TO: " + gameState.getGameStateID());
-
         if (gameState != null) {
 
             // CALL 'EXIT' METHOD ON CURRENTLY CLOSED GAMESTATE.
             if (currentGameState != null) {
-
-                System.out.println("GAMESTATE (" + currentGameState.getGameStateID() + ") WILL BE EXIT.");
                 currentGameState.exit();
             }
 
@@ -31,8 +26,6 @@ public class GameStateManager {
             currentGameState = gameState;
             currentGameState.init();
             currentGameState.entered();
-
-            System.out.println("GAMESTATE (" + currentGameState.getGameStateID() +") WILL BE INIT AND ENTERED.");
         }
     }
 
@@ -61,6 +54,18 @@ public class GameStateManager {
     public final void remove(final GameState gameState) {
         if (gameState != null && gameStates.containsKey(gameState.getGameStateID())) {
             gameStates.remove(gameState);
+        }
+    }
+
+    public void keyPressed(final int keyCode) {
+        if (isCurrentGameStateConfigured()) {
+            currentGameState.keyPressed(keyCode);
+        }
+    }
+
+    public void keyReleased(final int keyCode) {
+        if (isCurrentGameStateConfigured()) {
+            currentGameState.keyReleased(keyCode);
         }
     }
 

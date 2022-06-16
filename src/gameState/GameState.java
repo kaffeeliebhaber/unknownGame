@@ -16,11 +16,16 @@ public abstract class GameState {
         return gameStateID;
     }
 
+
     public void init() {}
 
     public void entered() {}
 
     public void exit() {}
+
+    public void keyPressed(final int keyCode) {}
+
+    public void keyReleased(final int keyCode) {}
 
     public void update() {}
 

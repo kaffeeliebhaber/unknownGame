@@ -22,4 +22,12 @@ public class GameUnknown extends GameBase {
         gameStateManager.changeTo(playState);
     }
 
+    @Override public void keyPressed(final int keyCode) {
+        gameStateManager.keyPressed(keyCode);
+    }
+
+    @Override public void keyReleased(final int keyCode) {
+        gameStateManager.keyReleased(keyCode);
+    }
+
 }

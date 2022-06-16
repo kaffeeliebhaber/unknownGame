@@ -2,6 +2,8 @@ package gameState;
 
 import core.game.Game;
 
+import java.awt.event.KeyEvent;
+
 public class GameStatePauseState extends GameState {
 
     private final Game game;
@@ -13,11 +15,16 @@ public class GameStatePauseState extends GameState {
     }
 
     @Override
-    public void update() {
+    public void keyPressed(final int keyCode) {
 
-        if (game.getKeyHandler().enterPressed) {
-            this.gameStateManager.changeTo(GameStateID.PLAY);
+        if (keyCode == KeyEvent.VK_ENTER) {
+            gameStateManager.changeTo(GameStateID.PLAY);
         }
+
+    }
+
+    @Override
+    public void update() {
 
     }
 

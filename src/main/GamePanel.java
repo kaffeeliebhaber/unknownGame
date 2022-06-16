@@ -6,6 +6,8 @@ import handler.KeyHandler;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import entity.Player;
 
@@ -28,6 +30,9 @@ public class GamePanel extends JPanel implements Runnable {
     // GAME
     private final Game game;
 
+    // DEBUG
+    private boolean debug;
+
     public GamePanel(final Game game) {
 
         this.game = game;
@@ -39,9 +44,16 @@ public class GamePanel extends JPanel implements Runnable {
         this.requestFocus();
 
         // CREATE AND REGISTER KEYLISTENER.
-        final KeyHandler keyHandler = new KeyHandler();
-        this.addKeyListener(keyHandler);
-        game.setKeyHandler(keyHandler);
+        this.addKeyListener(new KeyHandler(game));
+        this.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+
+                if (e.getKeyCode() == KeyEvent.VK_F12) {
+                    debug = !debug;
+                }
+            }
+
+        });
 
         // WE MAKE SURE GAME WILL BE INIT CORRECTLY.
         game.init();
@@ -66,8 +78,11 @@ public class GamePanel extends JPanel implements Runnable {
         while (gameThread != null) {
 
             currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
+
+            long deltaTime = currentTime - lastTime;
+
+            delta += deltaTime / drawInterval;
+            timer += deltaTime;
             lastTime = currentTime;
 
             if (delta >= 1) {
@@ -79,7 +94,10 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (timer >= 1000000000) {
 
-                System.out.println("FPS: "+ drawCount);
+                if (debug) {
+                    System.out.println("FPS: " + drawCount);
+                }
+
                 drawCount = 0;
                 timer = 0;
             }
