@@ -1,0 +1,6 @@
+Version 0.0.1
+
+0.0.1
+* Create project solution.
+* Added game entry point main() method.
+* Added gamePanel as basic implementation.
