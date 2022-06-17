@@ -4,11 +4,15 @@ import core.game.Camera;
 import core.game.Game;
 import entity.Dummy;
 import entity.Player;
+import entity.renderer.ImageEntityRenderer;
+import gfx.BufferedImageHelper;
+import gfx.ImageLoader;
 import main.GamePanel;
 import tile.TileManager;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 public class GameStatePlayState extends GameState {
 
@@ -100,8 +104,12 @@ public class GameStatePlayState extends GameState {
 
     public void init() {
 
+        // TODO: Dient aktuell lediglich zu Testzwecken.
+        final BufferedImage playerImage = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+
         // CREATE PLAYER
         player = new Player(game);
+        player.setEntityRenderer(new ImageEntityRenderer(player, playerImage));
 
         // CREATE DUMMY OBJECT
         dummy = new Dummy(10, 10, 38, 38, 0);

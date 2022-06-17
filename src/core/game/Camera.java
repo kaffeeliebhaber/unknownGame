@@ -10,7 +10,7 @@ import java.awt.*;
 public class Camera extends GameObject implements PositionChangeListener {
 
     private final Dimension gameDimension;
-    private Entity currentEntity;
+    private GameObject gameObject;
 
     public Camera(int startX, int startY, int cameraWidth, int cameraHeight, Dimension gameDimension) {
         super(startX, startY, cameraWidth, cameraHeight);
@@ -50,42 +50,42 @@ public class Camera extends GameObject implements PositionChangeListener {
      * Anschließend wird das neue Spielobjekt gesetzt.
      * Die Kamera registriert sich als Listener dem neuen Spielobjekt.
      */
-    public void focusOn(final Entity entity) {
+    public void focusOn(final GameObject gameObject) {
 
-        if (entity != null && this.currentEntity != entity) {
+        if (gameObject != null && this.gameObject != gameObject) {
 
             removePositionChangeListener();
-            setEntity(entity);
-            centerOnGameObject(this.currentEntity);
+            setEntity(gameObject);
+            centerOnGameObject(this.gameObject);
         }
     }
 
     // Entfernt die Kamera als GameObjektListener aus dem aktuellen Spielobjekt (Ankerobjekt).
     private void removePositionChangeListener() {
-        if (currentEntity != null) {
-            currentEntity.removePositionChangeListener(this);
+        if (gameObject != null) {
+            gameObject.removePositionChangeListener(this);
         }
     }
 
     // Setzt das übergebene Spielobjekt als aktuelles Ankerobjekt.
-    private void setEntity(final Entity entity) {
-        this.currentEntity = entity;
-        this.currentEntity.addPositionChangeListener(this);
+    private void setEntity(final GameObject gameObject) {
+        this.gameObject = gameObject;
+        this.gameObject.addPositionChangeListener(this);
     }
 
     // Die Kamera wird auf das übergebene Spielobjekt gesetzt.
-    private void centerOnGameObject(final Entity entity) {
+    private void centerOnGameObject(final GameObject gameObject) {
 
         //System.out.println("ENTERED");
 
         // Mittelpunkt des <GameObjects>.
-        final Vector entityCenter = entity.getCenterPosition();
+        final Vector gameObjectCenter = gameObject.getCenterPosition();
 
         //System.out.println("EntityCenterPosition: " + entityCenter);
 
         // Camera Position (TOP-LEFT)
-        int cX = (int) (entityCenter.x - width * 0.5f);
-        int cY = (int) (entityCenter.y - height * 0.5f);
+        int cX = (int) (gameObjectCenter.x - width * 0.5f);
+        int cY = (int) (gameObjectCenter.y - height * 0.5f);
 
         //System.out.println("BEFORE: CameraX: " + cX + ", CameraY: " + cY);
 
@@ -95,12 +95,11 @@ public class Camera extends GameObject implements PositionChangeListener {
         // Ausrichten der y-Position | Prüfen, ob die Grenzen erreicht wurden.
         setY(alignY(cY));
 
-        //System.out.println("(Camera.centerOnGameObject): CameraX: " + cX + ", CameraY: " + cY + ", x: " + x + ", y: " + y);
     }
 
 
     @Override
-    public void positionChanged(Entity e, int oldX, int oldY, int newX, int newY) {
-        centerOnGameObject(e);
+    public void positionChanged(GameObject gameObject, int oldX, int oldY, int newX, int newY) {
+        centerOnGameObject(gameObject);
     }
 }

@@ -19,8 +19,10 @@ public class Dummy extends MovableEntity {
         image = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
     }
 
-
+/*
     public void draw(Graphics2D g2d, final Camera camera) {
         g2d.drawImage(image, x - camera.getX(), y - camera.getY(), null);
     }
+    */
+
 }

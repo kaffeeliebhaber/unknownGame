@@ -1,57 +1,32 @@
 package entity;
 
 import core.game.Camera;
+import entity.renderer.DefaultEntityRenderer;
+import entity.renderer.EntityRenderer;
 
 import java.awt.*;
-import java.util.LinkedList;
-import java.util.List;
 
 public abstract class Entity extends GameObject {
 
-    private List<PositionChangeListener> positionChangeListeners;
+    private EntityRenderer entityRenderer;
 
     public Entity(int x, int y, int width, int height) {
         super(x, y, width, height);
 
-        positionChangeListeners = new LinkedList<PositionChangeListener>();
+        setEntityRenderer(new DefaultEntityRenderer(this));
     }
 
-
-    public void translateX(int deltaX) {
-
-        notifyPositionChangeListeners(x + deltaX, y);
-
-        x += deltaX;
-    }
-
-    public void translateY(int deltaY) {
-
-        notifyPositionChangeListeners(x, y + deltaY);
-
-        y += deltaY;
-    }
-
-    public void translate(int deltaX, int deltaY) {
-
-        notifyPositionChangeListeners(x + deltaX, y + deltaY);
-
-        x += deltaY;
-        y += deltaY;
+    public void setEntityRenderer(final EntityRenderer entityRenderer) {
+        if (entityRenderer != null) {
+            this.entityRenderer = entityRenderer;
+        }
     }
 
     public void update() {}
 
-    public void draw(Graphics2D g2D, Camera camera) {}
-
-    private void notifyPositionChangeListeners(int newX, int newY) {
-        positionChangeListeners.stream().forEach(l -> l.positionChanged(this, x, y, newX, newY));
+    public void draw(Graphics2D g2D, Camera camera) {
+        entityRenderer.draw(g2D, camera);
     }
 
-    public void addPositionChangeListener(final PositionChangeListener l) {
-        positionChangeListeners.add(l);
-    }
 
-    public void removePositionChangeListener(final PositionChangeListener l) {
-        positionChangeListeners.remove(l);
-    }
 }
