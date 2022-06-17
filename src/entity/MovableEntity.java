@@ -1,7 +1,5 @@
 package entity;
 
-import core.game.Game;
-
 public class MovableEntity extends Entity {
 
     protected int movingSpeed;

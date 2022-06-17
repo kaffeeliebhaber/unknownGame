@@ -105,11 +105,11 @@ public class GameStatePlayState extends GameState {
     public void init() {
 
         // TODO: Dient aktuell lediglich zu Testzwecken.
-        final BufferedImage playerImage = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        final BufferedImage playerImageScaled = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
 
         // CREATE PLAYER
         player = new Player(game);
-        player.setEntityRenderer(new ImageEntityRenderer(player, playerImage));
+        player.setEntityRenderer(new ImageEntityRenderer(player, playerImageScaled));
 
         // CREATE DUMMY OBJECT
         dummy = new Dummy(10, 10, 38, 38, 0);
