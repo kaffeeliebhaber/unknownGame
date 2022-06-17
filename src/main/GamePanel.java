@@ -1,15 +1,12 @@
 package main;
 
 import core.game.Game;
-import core.game.GameBase;
 import handler.KeyHandler;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
-import entity.Player;
 
 public class GamePanel extends JPanel implements Runnable {
 

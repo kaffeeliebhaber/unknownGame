@@ -1,6 +1,9 @@
-package entity;
+package gameObject.entity;
+
+import gameObject.CollisionArea;
 
 public class MovableEntity extends Entity {
+
 
     protected int movingSpeed;
     protected boolean moveLeft, moveUp, moveRight, moveDown;
@@ -30,11 +33,11 @@ public class MovableEntity extends Entity {
     public void move() {
 
         if (moveLeft) {
-            translateX(- movingSpeed);
+            translateX(-movingSpeed);
         }
 
         if (moveUp) {
-            translateY(- movingSpeed);
+            translateY(-movingSpeed);
         }
 
         if (moveRight) {
@@ -49,4 +52,6 @@ public class MovableEntity extends Entity {
     public void update() {
         move();
     }
+
+
 }

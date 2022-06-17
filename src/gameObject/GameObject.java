@@ -1,4 +1,4 @@
-package entity;
+package gameObject;
 
 import math.Vector;
 
@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class GameObject {
 
-    private List<PositionChangeListener> positionChangeListeners;
+    private List<GameObjectPositionChangeListener> gameObjectPositionChangeListeners;
     protected int x, y;
     protected int width, height;
     protected boolean active;
@@ -18,7 +18,7 @@ public abstract class GameObject {
         setWidth(width);
         setHeight(height);
 
-        positionChangeListeners = new LinkedList<PositionChangeListener>();
+        gameObjectPositionChangeListeners = new LinkedList<GameObjectPositionChangeListener>();
     }
 
     public void setX(int x) {
@@ -56,24 +56,24 @@ public abstract class GameObject {
 
     public void translateX(int deltaX) {
 
-        notifyPositionChangeListeners(x + deltaX, y);
-
         x += deltaX;
+
+        notifyPositionChangeListeners(deltaX, 0);
     }
 
     public void translateY(int deltaY) {
 
-        notifyPositionChangeListeners(x, y + deltaY);
-
         y += deltaY;
+
+        notifyPositionChangeListeners(0, deltaY);
     }
 
     public void translate(int deltaX, int deltaY) {
 
-        notifyPositionChangeListeners(x + deltaX, y + deltaY);
-
-        x += deltaY;
+        x += deltaX;
         y += deltaY;
+
+        notifyPositionChangeListeners(deltaX, deltaY);
     }
 
     public Vector getCenterPosition() {
@@ -92,16 +92,16 @@ public abstract class GameObject {
         active = false;
     }
 
-    private void notifyPositionChangeListeners(int newX, int newY) {
-        positionChangeListeners.stream().forEach(l -> l.positionChanged(this, x, y, newX, newY));
+    private void notifyPositionChangeListeners(int deltaX, int deltaY) {
+        gameObjectPositionChangeListeners.stream().forEach(l -> l.positionChanged(this, deltaX, deltaY));
     }
 
-    public void addPositionChangeListener(final PositionChangeListener l) {
-        positionChangeListeners.add(l);
+    public void addPositionChangeListener(final GameObjectPositionChangeListener l) {
+        gameObjectPositionChangeListeners.add(l);
     }
 
-    public void removePositionChangeListener(final PositionChangeListener l) {
-        positionChangeListeners.remove(l);
+    public void removePositionChangeListener(final GameObjectPositionChangeListener l) {
+        gameObjectPositionChangeListeners.remove(l);
     }
 
     @Override

@@ -1,7 +1,7 @@
-package entity.renderer;
+package gameObject.renderer;
 
 import core.game.Camera;
-import entity.Entity;
+import gameObject.entity.Entity;
 
 import java.awt.*;
 

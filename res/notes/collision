@@ -1,0 +1,11 @@
+[] Collision zwischen zwei Rechtecken
+[] Wo genau implementieren?
+[] Sollte ein Tile auch ein "Rechteck" sein?
+
+
+Was kann alles miteinander kollidieren?
+
+
+[] Evtl. class CollisionBox?
+    [] Methode: collision
+    [] Methode: create / new (int x, int y, int width, int height)

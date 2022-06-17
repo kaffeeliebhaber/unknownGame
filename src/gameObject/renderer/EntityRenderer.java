@@ -1,4 +1,4 @@
-package entity.renderer;
+package gameObject.renderer;
 
 import core.game.Camera;
 

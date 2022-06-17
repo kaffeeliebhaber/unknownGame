@@ -1,13 +1,12 @@
 package core.game;
 
-import entity.Entity;
-import entity.GameObject;
-import entity.PositionChangeListener;
+import gameObject.GameObject;
+import gameObject.GameObjectPositionChangeListener;
 import math.Vector;
 
 import java.awt.*;
 
-public class Camera extends GameObject implements PositionChangeListener {
+public class Camera extends GameObject implements GameObjectPositionChangeListener {
 
     private final Dimension gameDimension;
     private GameObject gameObject;
@@ -55,8 +54,9 @@ public class Camera extends GameObject implements PositionChangeListener {
         if (gameObject != null && this.gameObject != gameObject) {
 
             removePositionChangeListener();
-            setEntity(gameObject);
-            centerOnGameObject(this.gameObject);
+            setGameObject(gameObject);
+            addPositionChangeListener(gameObject);
+            centerOnGameObject(gameObject);
         }
     }
 
@@ -67,39 +67,37 @@ public class Camera extends GameObject implements PositionChangeListener {
         }
     }
 
+    private void addPositionChangeListener(final GameObject gameObject) {
+        if (gameObject != null) {
+            gameObject.addPositionChangeListener(this);
+        }
+    }
+
     // Setzt das übergebene Spielobjekt als aktuelles Ankerobjekt.
-    private void setEntity(final GameObject gameObject) {
+    private void setGameObject(final GameObject gameObject) {
         this.gameObject = gameObject;
-        this.gameObject.addPositionChangeListener(this);
     }
 
     // Die Kamera wird auf das übergebene Spielobjekt gesetzt.
     private void centerOnGameObject(final GameObject gameObject) {
 
-        //System.out.println("ENTERED");
-
         // Mittelpunkt des <GameObjects>.
         final Vector gameObjectCenter = gameObject.getCenterPosition();
-
-        //System.out.println("EntityCenterPosition: " + entityCenter);
 
         // Camera Position (TOP-LEFT)
         int cX = (int) (gameObjectCenter.x - width * 0.5f);
         int cY = (int) (gameObjectCenter.y - height * 0.5f);
-
-        //System.out.println("BEFORE: CameraX: " + cX + ", CameraY: " + cY);
 
         // Ausrichten der x-Position | Prüfen, ob die Grenzen erreicht wurden.
         setX(alignX(cX));
 
         // Ausrichten der y-Position | Prüfen, ob die Grenzen erreicht wurden.
         setY(alignY(cY));
-
     }
 
 
     @Override
-    public void positionChanged(GameObject gameObject, int oldX, int oldY, int newX, int newY) {
+    public void positionChanged(GameObject gameObject, int deltaX, int deltaY) {
         centerOnGameObject(gameObject);
     }
 }

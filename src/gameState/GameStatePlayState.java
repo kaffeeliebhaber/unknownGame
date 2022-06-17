@@ -1,10 +1,12 @@
 package gameState;
 
+import animation.Direction;
 import core.game.Camera;
 import core.game.Game;
-import entity.Dummy;
-import entity.Player;
-import entity.renderer.ImageEntityRenderer;
+import gameObject.CollisionArea;
+import gameObject.entity.Dummy;
+import gameObject.entity.Player;
+import gameObject.renderer.ImageEntityRenderer;
 import gfx.BufferedImageHelper;
 import gfx.ImageLoader;
 import main.GamePanel;
@@ -44,11 +46,17 @@ public class GameStatePlayState extends GameState {
             // KANN ES EINE METHODE (CHECK AUF COLLISION GEBEN), IN DER ICH DIREKT IN ALLE RICHTUNGEN AUF COLLISION PRÜFE?
             // ES WÜRDE DIE ABFRAGEN VERMINDERN.
 
+            // Es müsste eigentich nur die Richtig geprüft werden, in die der Spieler aktuell läuft.
+
 
             // POSITIV BEMERKUNG: DA WIR DIE BEWEGUNG NUR IMMER DANN PRÜFEN, WENN WIR EINE TASTE GEDRÜCKT WURDE,
             // BRAUCHEN WIR DIE PLAYER - POSITION NICHT JEDES MAL NEU PÜRFEN!!
 
-            player.moveRight(true);
+            if (!tileManager.intersects(player.getCollisionArea(), Direction.RIGHT))
+            {
+                player.moveRight(true);
+            }
+
         }
 
         if (keyCode == KeyEvent.VK_A) {
@@ -110,9 +118,11 @@ public class GameStatePlayState extends GameState {
         // CREATE PLAYER
         player = new Player(game);
         player.setEntityRenderer(new ImageEntityRenderer(player, playerImageScaled));
+        player.setCollisionArea(new CollisionArea(100, 100, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE));
 
         // CREATE DUMMY OBJECT
         dummy = new Dummy(10, 10, 38, 38, 0);
+        dummy.setCollisionArea(new CollisionArea(10, 10, 38, 38));
 
         // CREATE TILEMANAGER
         tileManager = new TileManager(GamePanel.ORIG_TILE_SIZE);
@@ -133,10 +143,9 @@ public class GameStatePlayState extends GameState {
 
         tileManager.draw(g2D, camera);
 
-        player.draw(g2D, camera);
-
         dummy.draw(g2D, camera);
 
+        player.draw(g2D, camera);
 
     }
 }
