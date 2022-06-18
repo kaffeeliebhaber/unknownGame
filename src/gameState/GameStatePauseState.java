@@ -6,12 +6,8 @@ import java.awt.event.KeyEvent;
 
 public class GameStatePauseState extends GameState {
 
-    private final Game game;
-
-    public GameStatePauseState(GameStateManager gameStateManager, GameStateID gameStateID, final Game game) {
+    public GameStatePauseState(GameStateManager gameStateManager, GameStateID gameStateID) {
         super(gameStateManager, gameStateID);
-
-        this.game = game;
     }
 
     @Override

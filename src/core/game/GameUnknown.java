@@ -11,8 +11,8 @@ public class GameUnknown extends GameBase {
     public void init() {
 
         // DEFINE GAMESTATES
-        final GameState playState = new GameStatePlayState(gameStateManager, GameStateID.PLAY, this);
-        final GameState pauseState = new GameStatePauseState(gameStateManager, GameStateID.PAUSE, this);
+        final GameState playState = new GameStatePlayState(gameStateManager, GameStateID.PLAY);
+        final GameState pauseState = new GameStatePauseState(gameStateManager, GameStateID.PAUSE);
 
         // ADD GAME STATES TO OUR GAMESTATESMANAGER.
         gameStateManager.add(playState);

@@ -2,35 +2,32 @@ package gameState;
 
 import animation.Direction;
 import core.game.Camera;
-import core.game.Game;
 import gameObject.CollisionArea;
 import gameObject.entity.Dummy;
+import gameObject.entity.Entity;
 import gameObject.entity.Player;
 import gameObject.renderer.ImageEntityRenderer;
 import gfx.BufferedImageHelper;
 import gfx.ImageLoader;
 import main.GamePanel;
-import tile.TileManager;
+import tile.TileMap;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 public class GameStatePlayState extends GameState {
 
-    private final Game game;
     private Player player;
-    private TileManager tileManager;
+    private TileMap tileMap;
     private Camera camera;
 
     // TEST OBJECTS
-    private Dummy dummy;
+    private Entity staticGameObject;
 
-    public GameStatePlayState(GameStateManager gameStateManager, GameStateID gameStateID, final Game game) {
+    public GameStatePlayState(GameStateManager gameStateManager, GameStateID gameStateID) {
         super(gameStateManager, gameStateID);
-
-        this.game = game;
-
     }
 
     public void keyPressed(final int keyCode) {
@@ -64,7 +61,7 @@ public class GameStatePlayState extends GameState {
         }
 
         if (keyCode == KeyEvent.VK_F6) {
-            camera.focusOn(dummy);
+            camera.focusOn(staticGameObject);
         }
 
     }
@@ -102,17 +99,17 @@ public class GameStatePlayState extends GameState {
         final BufferedImage playerImageScaled = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
 
         // CREATE PLAYER
-        player = new Player(game);
+        player = new Player(100, 100, playerImageScaled.getWidth(), playerImageScaled.getHeight(), 3);
         player.setEntityRenderer(new ImageEntityRenderer(player, playerImageScaled));
         player.setCollisionArea(new CollisionArea(100, 100, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE));
 
         // CREATE DUMMY OBJECT
-        dummy = new Dummy(10, 10, 38, 38, 0);
-        //dummy.setCollisionArea(new CollisionArea(10, 10, 38, 38));
+        staticGameObject = new Dummy(10, 10, 38, 38, 0);
+        staticGameObject.setCollisionArea(new CollisionArea(10, 10, 38, 38));
 
         // CREATE TILEMANAGER
-        tileManager = new TileManager(GamePanel.ORIG_TILE_SIZE);
-        tileManager.load();
+        tileMap = new TileMap(GamePanel.ORIG_TILE_SIZE);
+        tileMap.load();
 
         // CREATE CAMERA - FOSUC CAMERA ON PLAYER
         camera = new Camera(
@@ -120,63 +117,43 @@ public class GameStatePlayState extends GameState {
                 0,
                 GamePanel.SCREEN_WIDTH,
                 GamePanel.SCREEN_HEIGHT,
-                new Dimension(tileManager.getWidthInTiles() * GamePanel.TILE_SIZE, tileManager.getHeightInTiles() * GamePanel.TILE_SIZE));
+                new Dimension(tileMap.getWidthInTiles() * GamePanel.TILE_SIZE, tileMap.getHeightInTiles() * GamePanel.TILE_SIZE));
 
         camera.focusOn(player);
     }
 
     public void update() {
 
+        handlePlayerTileManagerTilesCollision();
+
         player.update();
+
+        handlerPlayerTileManagerBorderCollision();
+    }
+
+    private void handlerPlayerTileManagerBorderCollision() {
 
         final CollisionArea playerCollisionArea = player.getCollisionArea();
 
-        // CHECK LEFT SIDE.
-        if (playerCollisionArea.getX() < 0) {
-            player.translateX(-playerCollisionArea.getX());
-        }
-
-        // CHECK TOP SIDE.
-        if (playerCollisionArea.getY() < 0) {
-            player.translateY(-playerCollisionArea.getY());
-        }
-
-        // CHECK RIGHT SIDE.
-        if (playerCollisionArea.getXRight() > tileManager.getWidth()) {
-            player.translateX(tileManager.getWidth() - playerCollisionArea.getXRight());
-        }
-
-        // CHECK BOTTOM SIDE.
-        if (playerCollisionArea.getYBottom() > tileManager.getHeight()) {
-            player.translateY(tileManager.getHeight() - playerCollisionArea.getYBottom());
-        }
+        if (playerCollisionArea.getX() < 0) player.translateX(-playerCollisionArea.getX());
+        if (playerCollisionArea.getY() < 0) player.translateY(-playerCollisionArea.getY());
+        if (playerCollisionArea.getXRight() > tileMap.getWidth()) player.translateX(tileMap.getWidth() - playerCollisionArea.getXRight());
+        if (playerCollisionArea.getYBottom() > tileMap.getHeight()) player.translateY(tileMap.getHeight() - playerCollisionArea.getYBottom());
     }
 
-    // TODO: Test Methode
-    private void preUpdateCheckForMapCollision() {
-        switch (player.getMovingDirection()) {
-            case UP:
-                if (!tileManager.intersects(player, Direction.UP)) player.update();
-                break;
-            case RIGHT:
-                if (!tileManager.intersects(player, Direction.RIGHT)) player.update();
+    private void handlePlayerTileManagerTilesCollision() {
 
-                break;
-            case DOWN:
-                if (!tileManager.intersects(player, Direction.DOWN)) player.update();
-                break;
-            case LEFT:
-                if (!tileManager.intersects(player, Direction.LEFT)) player.update();
-                break;
-
-        }
+        if (tileMap.intersects(player, Direction.UP)) player.setCanMoveUp(false);
+        if (tileMap.intersects(player, Direction.RIGHT)) player.setCanMoveRight(false);
+        if (tileMap.intersects(player, Direction.DOWN)) player.setCanMoveDown(false);
+        if (tileMap.intersects(player, Direction.LEFT)) player.setCanMoveLeft(false);
     }
 
     public void draw(Graphics2D g2D) {
 
-        tileManager.draw(g2D, camera);
+        tileMap.draw(g2D, camera);
 
-        dummy.draw(g2D, camera);
+        staticGameObject.draw(g2D, camera);
 
         player.draw(g2D, camera);
 

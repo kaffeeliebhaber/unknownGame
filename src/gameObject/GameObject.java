@@ -13,6 +13,7 @@ public abstract class GameObject {
     protected boolean active;
 
     public GameObject(int x, int y, int width, int height) {
+
         setX(x);
         setY(y);
         setWidth(width);
