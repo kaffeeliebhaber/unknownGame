@@ -2,6 +2,7 @@ package gameObject.renderer;
 
 import core.game.Camera;
 import gameObject.entity.Entity;
+import main.GamePanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -21,16 +22,14 @@ public class ImageEntityRenderer implements EntityRenderer {
 
         g2D.drawImage(image, entity.getX() - camera.getX(), entity.getY() - camera.getY(), null);
 
-        /*
-        g2D.setColor(Color.MAGENTA);
-        g2D.drawRect(
-                entity.getX() - camera.getX(),
-                entity.getY() - camera.getY(),
-                entity.getWidth(),
-                entity.getHeight()
-        );
-
-
-         */
+        if (GamePanel.debug) {
+            g2D.setColor(Color.MAGENTA);
+            g2D.drawRect(
+                    entity.getX() - camera.getX(),
+                    entity.getY() - camera.getY(),
+                    entity.getWidth(),
+                    entity.getHeight()
+            );
+        }
     }
 }

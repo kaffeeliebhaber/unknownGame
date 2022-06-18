@@ -28,7 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final Game game;
 
     // DEBUG
-    private boolean debug;
+    public static boolean debug;
 
     public GamePanel(final Game game) {
 

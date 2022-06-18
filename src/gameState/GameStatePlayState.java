@@ -67,16 +67,8 @@ public class GameStatePlayState extends GameState {
     }
 
     public void keyReleased(final int keyCode) {
+
         if (keyCode == KeyEvent.VK_D) {
-
-            // CHECK FOR PLAYER COLLISION
-            // KANN ES EINE METHODE (CHECK AUF COLLISION GEBEN), IN DER ICH DIREKT IN ALLE RICHTUNGEN AUF COLLISION PRÜFE?
-            // ES WÜRDE DIE ABFRAGEN VERMINDERN.
-
-
-            // POSITIV BEMERKUNG: DA WIR DIE BEWEGUNG NUR IMMER DANN PRÜFEN, WENN WIR EINE TASTE GEDRÜCKT WURDE,
-            // BRAUCHEN WIR DIE PLAYER - POSITION NICHT JEDES MAL NEU PÜRFEN!!
-
             player.moveRight(false);
         }
 
@@ -90,6 +82,10 @@ public class GameStatePlayState extends GameState {
 
         if (keyCode == KeyEvent.VK_S) {
             player.moveDown(false);
+        }
+
+        if (keyCode == KeyEvent.VK_F11) {
+            GamePanel.debug = !GamePanel.debug;
         }
     }
 
@@ -129,24 +125,39 @@ public class GameStatePlayState extends GameState {
         player.update();
 
         handlerPlayerTileManagerBorderCollision();
+
     }
 
     private void handlerPlayerTileManagerBorderCollision() {
 
         final CollisionArea playerCollisionArea = player.getCollisionArea();
 
-        if (playerCollisionArea.getX() < 0) player.translateX(-playerCollisionArea.getX());
-        if (playerCollisionArea.getY() < 0) player.translateY(-playerCollisionArea.getY());
-        if (playerCollisionArea.getXRight() > tileMap.getWidth()) player.translateX(tileMap.getWidth() - playerCollisionArea.getXRight());
-        if (playerCollisionArea.getYBottom() > tileMap.getHeight()) player.translateY(tileMap.getHeight() - playerCollisionArea.getYBottom());
+        if (playerCollisionArea.getX() < 0)
+            player.translateX(-playerCollisionArea.getX());
+
+        if (playerCollisionArea.getY() < 0)
+            player.translateY(-playerCollisionArea.getY());
+
+        if (playerCollisionArea.getXRight() > tileMap.getWidth())
+            player.translateX(tileMap.getWidth() - playerCollisionArea.getXRight());
+
+        if (playerCollisionArea.getYBottom() > tileMap.getHeight())
+            player.translateY(tileMap.getHeight() - playerCollisionArea.getYBottom());
     }
 
     private void handlePlayerTileManagerTilesCollision() {
 
-        if (tileMap.intersects(player, Direction.UP)) player.setCanMoveUp(false);
-        if (tileMap.intersects(player, Direction.RIGHT)) player.setCanMoveRight(false);
-        if (tileMap.intersects(player, Direction.DOWN)) player.setCanMoveDown(false);
-        if (tileMap.intersects(player, Direction.LEFT)) player.setCanMoveLeft(false);
+        if (player.isMoveUp() && tileMap.intersects(player, Direction.UP))
+            player.setCanMoveUp(false);
+
+        if (player.isMoveRight() && tileMap.intersects(player, Direction.RIGHT))
+            player.setCanMoveRight(false);
+
+        if (player.isMoveDown() && tileMap.intersects(player, Direction.DOWN))
+            player.setCanMoveDown(false);
+
+        if (player.isMoveLeft() && tileMap.intersects(player, Direction.LEFT))
+            player.setCanMoveLeft(false);
     }
 
     public void draw(Graphics2D g2D) {

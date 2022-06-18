@@ -5,8 +5,9 @@ import gameObject.CollisionArea;
 import gameObject.GameObject;
 import gameObject.renderer.DefaultEntityRenderer;
 import gameObject.renderer.EntityRenderer;
+import main.GamePanel;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 
 public abstract class Entity extends GameObject {
 
@@ -34,7 +35,7 @@ public abstract class Entity extends GameObject {
     public void draw(Graphics2D g2D, Camera camera) {
         entityRenderer.draw(g2D, camera);
 
-        if (collisionArea != null) {
+        if (collisionArea != null && GamePanel.debug) {
             collisionArea.draw(g2D, camera);
         }
     }

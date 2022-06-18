@@ -36,16 +36,46 @@ public class TileMap {
 
         boolean collision = false;
 
-        short tileXLeft = (short) (movableEntity.getCollisionAreaXLeftAfterMoving() / GamePanel.TILE_SIZE);
-        short tileXRight = (short) (movableEntity.getCollisionAreaXRightAfterMoving() / GamePanel.TILE_SIZE);
-        short tileYTop = (short) (movableEntity.getCollisionAreaYTopAfterMoving() / GamePanel.TILE_SIZE);
-        short tileYBottom = (short) (movableEntity.getCollisionAreaYBottomAfterMoving() / GamePanel.TILE_SIZE);
+        short tileXLeft, tileXRight;
+        short tileYTop, tileYBottom;
 
         switch (checkDirection) {
-            case UP: collision = getTile(tileXLeft, tileYTop).isSolid() || getTile(tileXRight, tileYTop).isSolid(); break;
-            case RIGHT: collision = getTile(tileXRight, tileYTop).isSolid() || getTile(tileXRight, tileYBottom).isSolid(); break;
-            case DOWN: collision = getTile(tileXLeft, tileYBottom).isSolid() || getTile(tileXRight, tileYBottom).isSolid(); break;
-            case LEFT: collision = getTile(tileXLeft, tileYTop).isSolid() || getTile(tileXLeft, tileYBottom).isSolid(); break;
+            case UP:
+
+                tileXLeft = (short) (movableEntity.getCollisionArea().getX() / GamePanel.TILE_SIZE);
+                tileXRight = (short) (movableEntity.getCollisionArea().getXRight() / GamePanel.TILE_SIZE);
+                tileYTop = (short) (movableEntity.getCollisionAreaYTopAfterMoving() / GamePanel.TILE_SIZE);
+
+                collision = getTile(tileXLeft, tileYTop).isSolid() || getTile(tileXRight, tileYTop).isSolid();
+
+                break;
+            case RIGHT:
+
+                tileXRight = (short) (movableEntity.getCollisionAreaXRightAfterMoving() / GamePanel.TILE_SIZE);
+                tileYTop = (short) (movableEntity.getCollisionArea().getY() / GamePanel.TILE_SIZE);
+                tileYBottom = (short) (movableEntity.getCollisionArea().getYBottom() / GamePanel.TILE_SIZE);
+
+                collision = getTile(tileXRight, tileYTop).isSolid() || getTile(tileXRight, tileYBottom).isSolid();
+
+                break;
+            case DOWN:
+
+                tileXLeft = (short) (movableEntity.getCollisionArea().getX() / GamePanel.TILE_SIZE);
+                tileXRight = (short) (movableEntity.getCollisionArea().getXRight() / GamePanel.TILE_SIZE);
+                tileYBottom = (short) (movableEntity.getCollisionAreaYBottomAfterMoving() / GamePanel.TILE_SIZE);
+
+                collision = getTile(tileXLeft, tileYBottom).isSolid() || getTile(tileXRight, tileYBottom).isSolid();
+
+                break;
+            case LEFT:
+
+                tileXLeft = (short) (movableEntity.getCollisionAreaXLeftAfterMoving() / GamePanel.TILE_SIZE);
+                tileYTop = (short) (movableEntity.getCollisionArea().getY() / GamePanel.TILE_SIZE);
+                tileYBottom = (short) (movableEntity.getCollisionArea().getYBottom() / GamePanel.TILE_SIZE);
+
+                collision = getTile(tileXLeft, tileYTop).isSolid() || getTile(tileXLeft, tileYBottom).isSolid();
+
+                break;
         }
 
         return collision;
@@ -116,6 +146,17 @@ public class TileMap {
                         col * GamePanel.TILE_SIZE - camera.getX(),
                         row * GamePanel.TILE_SIZE - camera.getY(),
                         null);
+
+                if (GamePanel.debug) {
+                    // TODO: RENDER TILE BORDER.
+                    g2D.setColor(Color.MAGENTA);
+                    g2D.drawRect(
+                            col * GamePanel.TILE_SIZE - camera.getX(),
+                            row * GamePanel.TILE_SIZE - camera.getY(),
+                            GamePanel.TILE_SIZE,
+                            GamePanel.TILE_SIZE
+                    );
+                }
             }
         }
     }

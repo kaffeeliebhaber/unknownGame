@@ -100,7 +100,7 @@ public class MovableEntity extends Entity {
 
         if (moveLeft) {
             xLeftAfterMoving -= movingSpeed;
-        } else {
+        } else if (moveRight) {
             xLeftAfterMoving += movingSpeed;
         }
 
@@ -113,7 +113,7 @@ public class MovableEntity extends Entity {
 
         if (moveLeft) {
             xRightAfterMoving -= movingSpeed;
-        } else {
+        } else if (moveRight) {
             xRightAfterMoving += movingSpeed;
         }
 
@@ -126,7 +126,7 @@ public class MovableEntity extends Entity {
 
         if (moveUp) {
             yTopAfterMoving -= movingSpeed;
-        } else {
+        } else if (moveDown) {
             yTopAfterMoving += movingSpeed;
         }
 
@@ -139,7 +139,7 @@ public class MovableEntity extends Entity {
 
         if (moveUp) {
             yBottomAfterMoving -= movingSpeed;
-        } else {
+        } else if (moveDown) {
             yBottomAfterMoving += movingSpeed;
         }
 
