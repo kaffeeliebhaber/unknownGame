@@ -23,13 +23,7 @@ public class CollisionArea extends GameObject implements GameObjectPositionChang
         return collision;
     }
 
-    public int getXRight() {
-        return x + width;
-    }
 
-    public int getYBottom() {
-        return y + height;
-    }
 
     @Override
     public void positionChanged(GameObject gameObject, int deltaX, int deltaY) {

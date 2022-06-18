@@ -53,6 +53,14 @@ public abstract class GameObject {
         return height;
     }
 
+    public int getXRight() {
+        return x + width;
+    }
+
+    public int getYBottom() {
+        return y + height;
+    }
+
     public void translateX(int deltaX) {
 
         setX(x + deltaX);

@@ -127,30 +127,28 @@ public class GameStatePlayState extends GameState {
 
     public void update() {
 
-        //preUpdateCheckForMapCollision();
-
         player.update();
 
+        final CollisionArea playerCollisionArea = player.getCollisionArea();
 
-        // TODO: Wir müssen die Überprüfung auf Basis der CollisionArea durchführen. NICHT auf der Dimension des Spielers!
         // CHECK LEFT SIDE.
-        if (player.getX() < 0) {
-            player.translateX(-player.getX());
+        if (playerCollisionArea.getX() < 0) {
+            player.translateX(-playerCollisionArea.getX());
         }
 
         // CHECK TOP SIDE.
-        if (player.getY() < 0) {
-            player.translateY(-player.getY());
+        if (playerCollisionArea.getY() < 0) {
+            player.translateY(-playerCollisionArea.getY());
         }
 
         // CHECK RIGHT SIDE.
-        if ((player.getX() + player.getWidth()) > tileManager.getWidth()) {
-            player.translateX(tileManager.getWidth() - player.getX() - player.getWidth());
+        if (playerCollisionArea.getXRight() > tileManager.getWidth()) {
+            player.translateX(tileManager.getWidth() - playerCollisionArea.getXRight());
         }
 
         // CHECK BOTTOM SIDE.
-        if ((player.getY() + player.getHeight()) > tileManager.getHeight()) {
-            player.translateY(tileManager.getHeight() - player.getY() - player.getHeight());
+        if (playerCollisionArea.getYBottom() > tileManager.getHeight()) {
+            player.translateY(tileManager.getHeight() - playerCollisionArea.getYBottom());
         }
     }
 
