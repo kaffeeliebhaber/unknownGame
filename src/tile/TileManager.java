@@ -4,6 +4,7 @@ import animation.Direction;
 import core.game.Camera;
 import core.game.Game;
 import gameObject.CollisionArea;
+import gameObject.entity.MovableEntity;
 import gfx.BufferedImageHelper;
 import gfx.ImageLoader;
 import main.GamePanel;
@@ -31,10 +32,43 @@ public class TileManager {
 
     }
 
-    public boolean intersects(final CollisionArea collisionArea, final Direction direction) {
+    // TODO: IMPLEMENT METHOD
+    public boolean intersects(final MovableEntity movableEntity, final Direction direction) {
 
         boolean collision = false;
 
+        switch (direction) {
+            case UP: break;
+            case RIGHT:
+
+                final CollisionArea movableEntityCollisionArea = movableEntity.getCollisionArea();
+
+                //System.out.println("(TileManager.intersects) CollisionArea= " + movableEntityCollisionArea);
+
+                short posXRight = (short) ((movableEntity.getCollisionArea().getXRight() + movableEntity.getMovingSpeed()) / GamePanel.TILE_SIZE);
+                short posYTop = (short) ((movableEntity.getCollisionArea().getY())/ GamePanel.TILE_SIZE);
+                short posYBottom = (short) ((movableEntity.getCollisionArea().getYBottom()) / GamePanel.TILE_SIZE);
+                short top = world[posYTop][posXRight];
+                short bottom = world[posYBottom][posXRight];
+
+                if (tiles[top].isSolid() || tiles[bottom].isSolid()) {
+                    collision = true;
+
+                    //System.out.println("(TileManager.intersects.collisionDetected)");
+                }
+
+                break;
+            case DOWN: break;
+            case LEFT: break;
+        }
+
+        return collision;
+    }
+
+    public boolean intersects(final CollisionArea collisionArea, final Direction direction) {
+
+        boolean collision = false;
+/*
         switch (direction) {
             case LEFT:
 
@@ -66,8 +100,10 @@ public class TileManager {
             case DOWN:
 
                 break;
+
         }
 
+        */
         /*
         WIE LÄUFT DIE ÜBERPRÜFUNG AB?
 
@@ -78,6 +114,7 @@ public class TileManager {
         [] ANSONSTEN <FALSE>.
 
         */
+
 
         return collision;
     }
@@ -136,9 +173,9 @@ public class TileManager {
         int maxY = ((camera.getY() + camera.getHeight()) / GamePanel.TILE_SIZE) + offset;
 
         if (minX < 0) minX = 0;
-        if (maxX > 50) maxX = 50;
+        if (maxX > getWidthInTiles()) maxX = getWidthInTiles();
         if (minY < 0) minY = 0;
-        if (maxY > 50) maxY = 50;
+        if (maxY > getHeightInTiles()) maxY = getHeightInTiles();
 
         for (int row = minY; row < maxY; row++) {
             for (int col = minX; col < maxX; col++) {
@@ -149,5 +186,21 @@ public class TileManager {
                         null);
             }
         }
+    }
+
+    public int getWidthInTiles() {
+        return world[0].length;
+    }
+
+    public int getHeightInTiles() {
+        return world.length;
+    }
+
+    public int getWidth() {
+        return getWidthInTiles() * GamePanel.TILE_SIZE;
+    }
+
+    public int getHeight() {
+        return getHeightInTiles() * GamePanel.TILE_SIZE;
     }
 }

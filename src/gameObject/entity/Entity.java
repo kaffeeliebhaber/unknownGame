@@ -44,4 +44,8 @@ public abstract class Entity extends GameObject {
         this.addPositionChangeListener(collisionArea);
     }
 
+    public String getClassNameForToString() {
+        return "Entity";
+    }
+
 }

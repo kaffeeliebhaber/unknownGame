@@ -11,4 +11,8 @@ public class Player extends MovableEntity {
         super(100, 100, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE, 3);
     }
 
+    public String getClassNameForToString() {
+        return "Player";
+    }
+
 }

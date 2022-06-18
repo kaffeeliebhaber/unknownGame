@@ -21,11 +21,11 @@ public abstract class GameObject {
         gameObjectPositionChangeListeners = new LinkedList<GameObjectPositionChangeListener>();
     }
 
-    public void setX(int x) {
+    protected void setX(int x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    protected void setY(int y) {
         this.y = y;
     }
 
@@ -53,25 +53,24 @@ public abstract class GameObject {
         return height;
     }
 
-
     public void translateX(int deltaX) {
 
-        x += deltaX;
+        setX(x + deltaX);
 
         notifyPositionChangeListeners(deltaX, 0);
     }
 
     public void translateY(int deltaY) {
 
-        y += deltaY;
+        setY(y + deltaY);
 
         notifyPositionChangeListeners(0, deltaY);
     }
 
     public void translate(int deltaX, int deltaY) {
 
-        x += deltaX;
-        y += deltaY;
+        setX(x + deltaX);
+        setY(y + deltaY);
 
         notifyPositionChangeListeners(deltaX, deltaY);
     }
@@ -106,7 +105,11 @@ public abstract class GameObject {
 
     @Override
     public String toString() {
-        return "GameObject [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
+        return getClassNameForToString() + " [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
+    }
+
+    public String getClassNameForToString() {
+        return "GameObject";
     }
 
 }

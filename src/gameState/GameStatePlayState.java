@@ -39,34 +39,21 @@ public class GameStatePlayState extends GameState {
             gameStateManager.changeTo(GameStateID.PAUSE);
         }
 
-        // TODO: DIE COLLISION DES SPIELERS MIT DER WELT ETC FEHLT HIER.
         if (keyCode == KeyEvent.VK_D) {
-
-            // CHECK FOR PLAYER COLLISION
-            // KANN ES EINE METHODE (CHECK AUF COLLISION GEBEN), IN DER ICH DIREKT IN ALLE RICHTUNGEN AUF COLLISION PRÜFE?
-            // ES WÜRDE DIE ABFRAGEN VERMINDERN.
-
-            // Es müsste eigentich nur die Richtig geprüft werden, in die der Spieler aktuell läuft.
-
-
-            // POSITIV BEMERKUNG: DA WIR DIE BEWEGUNG NUR IMMER DANN PRÜFEN, WENN WIR EINE TASTE GEDRÜCKT WURDE,
-            // BRAUCHEN WIR DIE PLAYER - POSITION NICHT JEDES MAL NEU PÜRFEN!!
-
-            if (!tileManager.intersects(player.getCollisionArea(), Direction.RIGHT))
-            {
-                player.moveRight(true);
-            }
-
+            player.moveRight(true);
         }
 
+        // MOVE: LEFT
         if (keyCode == KeyEvent.VK_A) {
             player.moveLeft(true);
         }
 
+        // MOVE: UP
         if (keyCode == KeyEvent.VK_W) {
             player.moveUp(true);
         }
 
+        // MOVE: DOWN
         if (keyCode == KeyEvent.VK_S) {
             player.moveDown(true);
         }
@@ -109,7 +96,6 @@ public class GameStatePlayState extends GameState {
         }
     }
 
-
     public void init() {
 
         // TODO: Dient aktuell lediglich zu Testzwecken.
@@ -122,21 +108,70 @@ public class GameStatePlayState extends GameState {
 
         // CREATE DUMMY OBJECT
         dummy = new Dummy(10, 10, 38, 38, 0);
-        dummy.setCollisionArea(new CollisionArea(10, 10, 38, 38));
+        //dummy.setCollisionArea(new CollisionArea(10, 10, 38, 38));
 
         // CREATE TILEMANAGER
         tileManager = new TileManager(GamePanel.ORIG_TILE_SIZE);
         tileManager.load();
 
         // CREATE CAMERA - FOSUC CAMERA ON PLAYER
-        camera = new Camera(0, 0, GamePanel.SCREEN_WIDTH, GamePanel.SCREEN_HEIGHT, new Dimension(50 * GamePanel.TILE_SIZE, 50 * GamePanel.TILE_SIZE));
-        camera.focusOn(player);
+        camera = new Camera(
+                0,
+                0,
+                GamePanel.SCREEN_WIDTH,
+                GamePanel.SCREEN_HEIGHT,
+                new Dimension(tileManager.getWidthInTiles() * GamePanel.TILE_SIZE, tileManager.getHeightInTiles() * GamePanel.TILE_SIZE));
 
+        camera.focusOn(player);
     }
 
     public void update() {
 
+        //preUpdateCheckForMapCollision();
+
         player.update();
+
+
+        // TODO: Wir müssen die Überprüfung auf Basis der CollisionArea durchführen. NICHT auf der Dimension des Spielers!
+        // CHECK LEFT SIDE.
+        if (player.getX() < 0) {
+            player.translateX(-player.getX());
+        }
+
+        // CHECK TOP SIDE.
+        if (player.getY() < 0) {
+            player.translateY(-player.getY());
+        }
+
+        // CHECK RIGHT SIDE.
+        if ((player.getX() + player.getWidth()) > tileManager.getWidth()) {
+            player.translateX(tileManager.getWidth() - player.getX() - player.getWidth());
+        }
+
+        // CHECK BOTTOM SIDE.
+        if ((player.getY() + player.getHeight()) > tileManager.getHeight()) {
+            player.translateY(tileManager.getHeight() - player.getY() - player.getHeight());
+        }
+    }
+
+    // TODO: Test Methode
+    private void preUpdateCheckForMapCollision() {
+        switch (player.getMovingDirection()) {
+            case UP:
+                if (!tileManager.intersects(player, Direction.UP)) player.update();
+                break;
+            case RIGHT:
+                if (!tileManager.intersects(player, Direction.RIGHT)) player.update();
+
+                break;
+            case DOWN:
+                if (!tileManager.intersects(player, Direction.DOWN)) player.update();
+                break;
+            case LEFT:
+                if (!tileManager.intersects(player, Direction.LEFT)) player.update();
+                break;
+
+        }
     }
 
     public void draw(Graphics2D g2D) {
@@ -148,4 +183,5 @@ public class GameStatePlayState extends GameState {
         player.draw(g2D, camera);
 
     }
+
 }

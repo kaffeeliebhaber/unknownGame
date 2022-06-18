@@ -20,5 +20,17 @@ public class ImageEntityRenderer implements EntityRenderer {
     public void draw(Graphics2D g2D, Camera camera) {
 
         g2D.drawImage(image, entity.getX() - camera.getX(), entity.getY() - camera.getY(), null);
+
+        /*
+        g2D.setColor(Color.MAGENTA);
+        g2D.drawRect(
+                entity.getX() - camera.getX(),
+                entity.getY() - camera.getY(),
+                entity.getWidth(),
+                entity.getHeight()
+        );
+
+
+         */
     }
 }

@@ -2,6 +2,6 @@ package animation;
 
 public enum Direction {
 
-    LEFT, UP, RIGHT, DOWN;
+    NONE, LEFT, UP, RIGHT, DOWN;
 
 }
