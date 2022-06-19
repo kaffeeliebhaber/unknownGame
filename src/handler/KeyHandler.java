@@ -9,9 +9,7 @@ public class KeyHandler implements KeyListener {
 
     private final Game game;
 
-    public KeyHandler(final Game game) {
-        this.game = game;
-    }
+    public KeyHandler(final Game game) { this.game = game; }
 
     @Override public void keyTyped(KeyEvent e) {}
 

@@ -2,7 +2,8 @@ package gameObject;
 
 import core.game.Camera;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Color;
 
 public class CollisionArea extends GameObject implements GameObjectPositionChangeListener {
 
@@ -10,20 +11,17 @@ public class CollisionArea extends GameObject implements GameObjectPositionChang
 
     public CollisionArea(int x, int y, int width, int height) {
         super(x, y, width, height);
-
     }
 
-    // TODO: METHODE TEMPLATE.
-    public boolean intersects(final CollisionArea collisionBox) {
+    public boolean intersects(final CollisionArea collisionArea) {
 
-        boolean collision = false;
+        boolean conditionLeft = this.getX() < collisionArea.getXRight();
+        boolean conditionRight = this.getXRight() > collisionArea.getX();
+        boolean conditionTop = this.getY() < collisionArea.getYBottom();
+        boolean conditionBottom = this.getYBottom() > collisionArea.getY();
 
-
-
-        return collision;
+        return conditionLeft && conditionRight && conditionTop && conditionBottom;
     }
-
-
 
     @Override
     public void positionChanged(GameObject gameObject, int deltaX, int deltaY) {

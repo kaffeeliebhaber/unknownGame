@@ -1,6 +1,7 @@
 package gameState;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 
 public abstract class GameState {
 
@@ -16,7 +17,6 @@ public abstract class GameState {
         return gameStateID;
     }
 
-
     public void init() {}
 
     public void entered() {}
@@ -26,6 +26,10 @@ public abstract class GameState {
     public void keyPressed(final int keyCode) {}
 
     public void keyReleased(final int keyCode) {}
+
+    public void mouseDragged(MouseEvent e) {}
+
+    public void mouseMoved(MouseEvent e) {}
 
     public void update() {}
 

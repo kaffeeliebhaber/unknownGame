@@ -1,6 +1,7 @@
 package gameState;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +55,18 @@ public final class GameStateManager {
     public final void remove(final GameState gameState) {
         if (gameState != null && gameStates.containsKey(gameState.getGameStateID())) {
             gameStates.remove(gameState);
+        }
+    }
+
+    public void mouseDragged(MouseEvent e) {
+        if (isCurrentGameStateConfigured()) {
+            currentGameState.mouseDragged(e);
+        }
+    }
+
+    public void mouseMoved(MouseEvent e) {
+        if (isCurrentGameStateConfigured()) {
+            currentGameState.mouseMoved(e);
         }
     }
 

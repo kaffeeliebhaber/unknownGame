@@ -1,5 +1,7 @@
 package gameObject.entity;
 
+import gameObject.CollisionArea;
+
 public class MovableEntity extends Entity {
 
     protected int movingSpeed;
@@ -92,6 +94,15 @@ public class MovableEntity extends Entity {
 
     public int getYBottomAfterMoving() {
         return getYBottom() + movingSpeed;
+    }
+
+    public boolean intersects(final Entity entity) {
+        return getCollisionAreaAfterMoving().intersects(entity.getCollisionArea());
+    }
+
+    public CollisionArea getCollisionAreaAfterMoving() {
+
+        return new CollisionArea(getCollisionAreaXLeftAfterMoving(), getCollisionAreaYTopAfterMoving(), getCollisionAreaXRightAfterMoving() - getCollisionAreaXLeftAfterMoving(), getCollisionAreaYBottomAfterMoving() - getCollisionAreaYTopAfterMoving());
     }
 
     public int getCollisionAreaXLeftAfterMoving() {

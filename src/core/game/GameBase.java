@@ -3,6 +3,7 @@ package core.game;
 import gameState.GameStateManager;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
 public abstract class GameBase implements Game {
 
@@ -15,6 +16,10 @@ public abstract class GameBase implements Game {
     public void keyPressed(final int keyCode) {}
 
     public void keyReleased(final int keyCode) {}
+
+    public void mouseDragged(MouseEvent e) {}
+
+    public void mouseMoved(MouseEvent e) {}
 
     public void update() {
         gameStateManager.update();

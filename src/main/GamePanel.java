@@ -1,10 +1,18 @@
 package main;
 
+// IMPORTS: GAME FRAMEWORK
 import core.game.Game;
 import handler.KeyHandler;
+import handler.MouseHandler;
 
-import javax.swing.*;
-import java.awt.*;
+// IMPORTS: SWING
+import javax.swing.JPanel;
+
+// IMPORTS: AWT
+import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -42,15 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         // CREATE AND REGISTER KEYLISTENER.
         this.addKeyListener(new KeyHandler(game));
-        this.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-
-                if (e.getKeyCode() == KeyEvent.VK_F12) {
-                    debug = !debug;
-                }
-            }
-
-        });
+        this.addMouseMotionListener( new MouseHandler(game));
 
         // WE MAKE SURE GAME WILL BE INIT CORRECTLY.
         game.init();

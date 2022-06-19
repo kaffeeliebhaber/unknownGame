@@ -7,7 +7,7 @@ import java.util.List;
 
 public abstract class GameObject {
 
-    private List<GameObjectPositionChangeListener> gameObjectPositionChangeListeners;
+    private final List<GameObjectPositionChangeListener> gameObjectPositionChangeListeners;
     protected int x, y;
     protected int width, height;
     protected boolean active;
@@ -19,7 +19,7 @@ public abstract class GameObject {
         setWidth(width);
         setHeight(height);
 
-        gameObjectPositionChangeListeners = new LinkedList<GameObjectPositionChangeListener>();
+        gameObjectPositionChangeListeners = new LinkedList<>();
     }
 
     protected void setX(int x) {
@@ -92,16 +92,16 @@ public abstract class GameObject {
         return active;
     }
 
-    protected void active() {
+    public void active() {
         active = true;
     }
 
-    protected void deactive() {
+    public void deactivate() {
         active = false;
     }
 
     private void notifyPositionChangeListeners(int deltaX, int deltaY) {
-        gameObjectPositionChangeListeners.stream().forEach(l -> l.positionChanged(this, deltaX, deltaY));
+        gameObjectPositionChangeListeners.forEach(l -> l.positionChanged(this, deltaX, deltaY));
     }
 
     public void addPositionChangeListener(final GameObjectPositionChangeListener l) {
@@ -112,8 +112,7 @@ public abstract class GameObject {
         gameObjectPositionChangeListeners.remove(l);
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return getClassNameForToString() + " [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
     }
 

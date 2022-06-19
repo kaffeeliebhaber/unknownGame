@@ -5,6 +5,8 @@ import gameState.GameStateID;
 import gameState.GameStatePauseState;
 import gameState.GameStatePlayState;
 
+import java.awt.event.MouseEvent;
+
 public class GameUnknown extends GameBase {
 
     @Override
@@ -29,5 +31,9 @@ public class GameUnknown extends GameBase {
     @Override public void keyReleased(final int keyCode) {
         gameStateManager.keyReleased(keyCode);
     }
+
+    @Override public void mouseDragged(MouseEvent e) { gameStateManager.mouseDragged(e); }
+
+    @Override public void mouseMoved(MouseEvent e) { gameStateManager.mouseMoved(e); }
 
 }

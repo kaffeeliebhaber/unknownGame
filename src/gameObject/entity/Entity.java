@@ -30,6 +30,15 @@ public abstract class Entity extends GameObject {
         return collisionArea;
     }
 
+    public boolean intersects(final Entity entity) {
+        return getCollisionArea().intersects(entity.getCollisionArea());
+    }
+
+    public boolean intersects(final MovableEntity movableEntity) {
+        return getCollisionArea().intersects(movableEntity.getCollisionAreaAfterMoving());
+    }
+
+
     public void update() {}
 
     public void draw(Graphics2D g2D, Camera camera) {

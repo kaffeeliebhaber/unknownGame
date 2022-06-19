@@ -5,26 +5,35 @@ import core.game.Camera;
 import gameObject.CollisionArea;
 import gameObject.entity.Dummy;
 import gameObject.entity.Entity;
+import gameObject.entity.MovableEntity;
 import gameObject.entity.Player;
+import gameObject.objects.Potion;
 import gameObject.renderer.ImageEntityRenderer;
 import gfx.BufferedImageHelper;
 import gfx.ImageLoader;
+import gfx.Spritesheet;
 import main.GamePanel;
 import tile.TileMap;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameStatePlayState extends GameState {
 
+    // GRAPHICS
+    private Spritesheet spritesheetObjects;
     private Player player;
     private TileMap tileMap;
     private Camera camera;
 
     // TEST OBJECTS
     private Entity staticGameObject;
+    private List<Entity> entities;
 
     public GameStatePlayState(GameStateManager gameStateManager, GameStateID gameStateID) {
         super(gameStateManager, gameStateID);
@@ -89,7 +98,20 @@ public class GameStatePlayState extends GameState {
         }
     }
 
+    public void mouseDragged(MouseEvent e) {}
+
+    public void mouseMoved(MouseEvent e) {
+
+        if (GamePanel.debug) {
+            //System.out.println("MouseX: " + e.getX() + ", MouseY: " + e.getY());
+        }
+
+    }
+
     public void init() {
+
+        spritesheetObjects = new Spritesheet("objects/objects.png", GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        spritesheetObjects.load();
 
         // TODO: Dient aktuell lediglich zu Testzwecken.
         final BufferedImage playerImageScaled = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
@@ -97,11 +119,21 @@ public class GameStatePlayState extends GameState {
         // CREATE PLAYER
         player = new Player(100, 100, playerImageScaled.getWidth(), playerImageScaled.getHeight(), 3);
         player.setEntityRenderer(new ImageEntityRenderer(player, playerImageScaled));
-        player.setCollisionArea(new CollisionArea(100, 100, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE));
+        player.setCollisionArea(new CollisionArea(109, 128, 30, 20));
+
+        entities = new ArrayList<Entity>();
 
         // CREATE DUMMY OBJECT
         staticGameObject = new Dummy(10, 10, 38, 38, 0);
         staticGameObject.setCollisionArea(new CollisionArea(10, 10, 38, 38));
+
+        entities.add(staticGameObject);
+
+        Entity potion = new Potion(200, 200, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        potion.setEntityRenderer(new ImageEntityRenderer(potion, spritesheetObjects.getImageAt(0, 0)));
+        potion.setCollisionArea(new CollisionArea(200, 200, 10, 10));
+
+        entities.add(potion);
 
         // CREATE TILEMANAGER
         tileMap = new TileMap(GamePanel.ORIG_TILE_SIZE);
@@ -122,7 +154,11 @@ public class GameStatePlayState extends GameState {
 
         handlePlayerTileManagerTilesCollision();
 
+        handlePlayerEntityCollision();
+
         player.update();
+
+        entities.stream().forEach(e -> e.update());
 
         handlerPlayerTileManagerBorderCollision();
 
@@ -160,11 +196,50 @@ public class GameStatePlayState extends GameState {
             player.setCanMoveLeft(false);
     }
 
+    private void handlePlayerEntityCollision() {
+
+        for (final Entity e : entities) {
+
+            // TODO: Funktioniert so einfach leider nicht wie gewünscht. Ein sliden an den Objekten ist dadurch leider nicht möglich.
+            final boolean intersectsPlayer = e.intersects(player);
+
+
+            if (intersectsPlayer) {
+
+                if (e instanceof MovableEntity) {
+
+                    // TYPE: MOVABLE.
+
+                } else {
+
+                    if (player.isMoveUp()) {
+                        player.setCanMoveUp(false);
+                    }
+
+                    if (player.isMoveDown()) {
+                        player.setCanMoveDown(false);
+                    }
+
+                    if (player.isMoveLeft()) {
+                        player.setCanMoveLeft(false);
+                    }
+
+                    if (player.isMoveRight()) {
+                        player.setCanMoveRight(false);
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
     public void draw(Graphics2D g2D) {
 
         tileMap.draw(g2D, camera);
 
-        staticGameObject.draw(g2D, camera);
+        entities.forEach(e -> e.draw(g2D, camera));
 
         player.draw(g2D, camera);
 
