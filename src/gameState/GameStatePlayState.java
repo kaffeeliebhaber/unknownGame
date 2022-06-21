@@ -8,6 +8,7 @@ import gameObject.entity.Entity;
 import gameObject.entity.MovableEntity;
 import gameObject.entity.Player;
 import gameObject.objects.Potion;
+import gameObject.objects.SingleTree;
 import gameObject.renderer.ImageEntityRenderer;
 import gfx.BufferedImageHelper;
 import gfx.ImageLoader;
@@ -21,6 +22,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class GameStatePlayState extends GameState {
@@ -33,7 +35,7 @@ public class GameStatePlayState extends GameState {
 
     // TEST OBJECTS
     private Entity staticGameObject;
-    private List<Entity> entities;
+    private Collection<Entity> entities;
 
     public GameStatePlayState(GameStateManager gameStateManager, GameStateID gameStateID) {
         super(gameStateManager, gameStateID);
@@ -110,7 +112,7 @@ public class GameStatePlayState extends GameState {
 
     public void init() {
 
-        spritesheetObjects = new Spritesheet("objects/objects.png", GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        spritesheetObjects = new Spritesheet("objects/objects.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
         spritesheetObjects.load();
 
         // TODO: Dient aktuell lediglich zu Testzwecken.
@@ -123,17 +125,32 @@ public class GameStatePlayState extends GameState {
 
         entities = new ArrayList<Entity>();
 
-        // CREATE DUMMY OBJECT
-        staticGameObject = new Dummy(10, 10, 38, 38, 0);
-        staticGameObject.setCollisionArea(new CollisionArea(10, 10, 38, 38));
+        // CREATE DUMMY OBJECTS
 
-        entities.add(staticGameObject);
+        // STATIC GAME OBJECT.
+        staticGameObject = new Dummy(300, 150, 38, 38, 0);
+        staticGameObject.setCollisionArea(new CollisionArea(staticGameObject.getX(), staticGameObject.getY(), staticGameObject.getWidth(), staticGameObject.getHeight()));
 
+        // POTION.
         Entity potion = new Potion(200, 200, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
-        potion.setEntityRenderer(new ImageEntityRenderer(potion, spritesheetObjects.getImageAt(0, 0)));
-        potion.setCollisionArea(new CollisionArea(200, 200, 10, 10));
+        potion.setEntityRenderer(new ImageEntityRenderer(potion, spritesheetObjects.getImageByIndex(0)));
+        potion.setCollisionArea(new CollisionArea(potion.getX(), potion.getY(), 10 * GamePanel.SCALE, 10 * GamePanel.SCALE));
 
+        // SIMPLE TREE.
+        Entity singleTree = new SingleTree(400, 450, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        singleTree.setEntityRenderer(new ImageEntityRenderer(singleTree, spritesheetObjects.getImageByIndex(1)));
+        singleTree.setCollisionArea(
+                new CollisionArea(
+                        singleTree.getX() + 5 * GamePanel.SCALE,
+                        singleTree.getY() + GamePanel.TILE_SIZE - 3 * GamePanel.SCALE,
+                        5 * GamePanel.SCALE,
+                        3 * GamePanel.SCALE));
+
+        // Add entities as game objects.
+        entities.add(staticGameObject);
         entities.add(potion);
+        entities.add(singleTree);
+        entities.add(player);
 
         // CREATE TILEMANAGER
         tileMap = new TileMap(GamePanel.ORIG_TILE_SIZE);
@@ -155,8 +172,6 @@ public class GameStatePlayState extends GameState {
         handlePlayerTileManagerTilesCollision();
 
         handlePlayerEntityCollision();
-
-        player.update();
 
         entities.stream().forEach(e -> e.update());
 
@@ -200,48 +215,35 @@ public class GameStatePlayState extends GameState {
 
         for (final Entity e : entities) {
 
-            // TODO: Funktioniert so einfach leider nicht wie gewünscht. Ein sliden an den Objekten ist dadurch leider nicht möglich.
-            final boolean intersectsPlayer = e.intersects(player);
+            if (e == player) continue;
 
-
-            if (intersectsPlayer) {
-
-                if (e instanceof MovableEntity) {
-
-                    // TYPE: MOVABLE.
-
-                } else {
-
-                    if (player.isMoveUp()) {
-                        player.setCanMoveUp(false);
-                    }
-
-                    if (player.isMoveDown()) {
-                        player.setCanMoveDown(false);
-                    }
-
-                    if (player.isMoveLeft()) {
-                        player.setCanMoveLeft(false);
-                    }
-
-                    if (player.isMoveRight()) {
-                        player.setCanMoveRight(false);
-                    }
-
-                }
+            if (player.isMoveUp() && player.canMoveUp() && e.intersects(player, Direction.UP)) {
+                player.setCanMoveUp(false);
             }
 
-        }
+            if (player.isMoveDown() && player.canMoveDown() && e.intersects(player, Direction.DOWN)) {
+                player.setCanMoveDown(false);
+            }
 
+            if (player.isMoveLeft() && player.canMoveLeft() && e.intersects(player, Direction.LEFT)) {
+                player.setCanMoveLeft(false);
+            }
+
+            if (player.isMoveRight() && player.canMoveRight() && e.intersects(player, Direction.RIGHT)) {
+                player.setCanMoveRight(false);
+            }
+        }
     }
 
     public void draw(Graphics2D g2D) {
 
         tileMap.draw(g2D, camera);
 
-        entities.forEach(e -> e.draw(g2D, camera));
 
-        player.draw(g2D, camera);
+        entities
+                .stream()
+                .sorted((e1, e2) -> new Integer(e1.getYBottom()).compareTo(e2.getYBottom()))
+                .forEach(e -> e.draw(g2D, camera));
 
     }
 

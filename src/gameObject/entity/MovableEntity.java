@@ -1,5 +1,6 @@
 package gameObject.entity;
 
+import animation.Direction;
 import gameObject.CollisionArea;
 
 public class MovableEntity extends Entity {
@@ -45,6 +46,14 @@ public class MovableEntity extends Entity {
     public void setCanMoveRight(boolean canMoveRight) { this.canMoveRight = canMoveRight; }
 
     public void setCanMoveDown(boolean canMoveDown) { this.canMoveDown = canMoveDown; }
+
+    public boolean canMoveLeft() { return canMoveLeft; }
+
+    public boolean canMoveRight() { return canMoveRight; }
+
+    public boolean canMoveUp() { return canMoveUp; }
+
+    public boolean canMoveDown() { return canMoveDown; }
 
     private void resetCanMove() {
         canMoveLeft = canMoveUp = canMoveRight = canMoveDown = true;
@@ -101,8 +110,37 @@ public class MovableEntity extends Entity {
     }
 
     public CollisionArea getCollisionAreaAfterMoving() {
+        return new CollisionArea(
+                getCollisionAreaXLeftAfterMoving(),
+                getCollisionAreaYTopAfterMoving(),
+                getCollisionAreaXRightAfterMoving() - getCollisionAreaXLeftAfterMoving(),
+                getCollisionAreaYBottomAfterMoving() - getCollisionAreaYTopAfterMoving());
+    }
 
-        return new CollisionArea(getCollisionAreaXLeftAfterMoving(), getCollisionAreaYTopAfterMoving(), getCollisionAreaXRightAfterMoving() - getCollisionAreaXLeftAfterMoving(), getCollisionAreaYBottomAfterMoving() - getCollisionAreaYTopAfterMoving());
+    public CollisionArea getCollisionAreaAfterMoving(final Direction movingDirection) {
+
+        int x = 0;
+        int y = 0;
+
+        switch (movingDirection) {
+
+            case UP:
+            case DOWN:
+                x = getCollisionArea().getX();
+                y = getCollisionAreaYTopAfterMoving();
+
+                break;
+
+            case LEFT:
+            case RIGHT:
+
+                x = getCollisionAreaXLeftAfterMoving();
+                y = getCollisionArea().getY();
+
+                break;
+        }
+
+        return new CollisionArea(x, y, getCollisionArea().getWidth(), getCollisionArea().getHeight());
     }
 
     public int getCollisionAreaXLeftAfterMoving() {

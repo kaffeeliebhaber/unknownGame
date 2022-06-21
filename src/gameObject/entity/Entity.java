@@ -1,5 +1,6 @@
 package gameObject.entity;
 
+import animation.Direction;
 import core.game.Camera;
 import gameObject.CollisionArea;
 import gameObject.GameObject;
@@ -34,8 +35,8 @@ public abstract class Entity extends GameObject {
         return getCollisionArea().intersects(entity.getCollisionArea());
     }
 
-    public boolean intersects(final MovableEntity movableEntity) {
-        return getCollisionArea().intersects(movableEntity.getCollisionAreaAfterMoving());
+    public boolean intersects(final MovableEntity movableEntity, final Direction movingDirection) {
+        return getCollisionArea().intersects(movableEntity.getCollisionAreaAfterMoving(movingDirection));
     }
 
 
@@ -52,10 +53,6 @@ public abstract class Entity extends GameObject {
     public void setCollisionArea(final CollisionArea collisionArea) {
         this.collisionArea = collisionArea;
         this.addPositionChangeListener(collisionArea);
-    }
-
-    public String getClassNameForToString() {
-        return "Entity";
     }
 
 }
