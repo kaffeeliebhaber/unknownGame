@@ -34,4 +34,9 @@ public class CollisionArea extends GameObject implements GameObjectPositionChang
         g2D.drawRect(x - camera.getX(), y - camera.getY(), width, height);
 
     }
+
+    @Override
+    public String getClassNameForToString() {
+        return "CollisionArea";
+    }
 }

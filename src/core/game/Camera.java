@@ -100,4 +100,9 @@ public class Camera extends GameObject implements GameObjectPositionChangeListen
     public void positionChanged(GameObject gameObject, int deltaX, int deltaY) {
         centerOnGameObject(gameObject);
     }
+
+    @Override
+    public String getClassNameForToString() {
+        return "Camera";
+    }
 }

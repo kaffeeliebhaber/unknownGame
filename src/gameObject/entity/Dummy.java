@@ -7,4 +7,7 @@ public class Dummy extends Entity {
         super(x, y, width, height);
     }
 
+    @Override
+    public String getClassNameForToString() { return "Dummy"; }
+
 }

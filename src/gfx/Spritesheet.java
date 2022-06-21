@@ -1,5 +1,7 @@
 package gfx;
 
+import main.GamePanel;
+
 import java.awt.image.BufferedImage;
 
 public class Spritesheet {
@@ -14,17 +16,23 @@ public class Spritesheet {
     private int rows;
     private int cols;
 
-    public Spritesheet(final String path, int tileWidth, int tileHeight)  {
-        this(ImageLoader.loadImage(path), tileWidth, tileHeight);
+    private int gameTileWidth;
+    private int gameTileHeight;
+
+    public Spritesheet(final String path, int tileWidth, int tileHeight, int gameTileWidth, int gameTileHeight)  {
+        this(ImageLoader.loadImage(path), tileWidth, tileHeight, gameTileWidth, gameTileHeight);
     }
 
-    public Spritesheet(final BufferedImage spritesheet, int tileWidth, int tileHeight) {
+    public Spritesheet(final BufferedImage spritesheet, int tileWidth, int tileHeight, int gameTileWidth, int gameTileHeight) {
         this.spritesheet = spritesheet;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
 
         this.rows = spritesheet.getHeight() / tileHeight;
         this.cols = spritesheet.getWidth() / tileWidth;
+
+        this.gameTileWidth = gameTileWidth;
+        this.gameTileHeight = gameTileHeight;
 
         subImages = new BufferedImage[rows][cols];
 
@@ -37,7 +45,10 @@ public class Spritesheet {
 
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                subImages[y][x] = spritesheet.getSubimage(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+
+                final BufferedImage unscaledImage = spritesheet.getSubimage(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+                final BufferedImage scaledImage = BufferedImageHelper.scale(unscaledImage, gameTileWidth, gameTileHeight);
+                subImages[y][x] = scaledImage;
             }
         }
     }

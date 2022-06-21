@@ -116,8 +116,6 @@ public abstract class GameObject {
         return getClassNameForToString() + " [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";
     }
 
-    public String getClassNameForToString() {
-        return "GameObject";
-    }
+    public abstract String getClassNameForToString();
 
 }
