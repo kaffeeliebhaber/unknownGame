@@ -59,6 +59,10 @@ public class MovableEntity extends Entity {
         canMoveLeft = canMoveUp = canMoveRight = canMoveDown = true;
     }
 
+    public boolean isMoving() {
+        return isMoveLeft() || isMoveUp() || isMoveRight() || isMoveDown();
+    }
+
     private void move() {
 
         if (moveLeft && canMoveLeft) {

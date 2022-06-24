@@ -1,5 +1,8 @@
 package gameState;
 
+import animation.Animation;
+import animation.AnimationID;
+import animation.AnimationPlayer;
 import animation.Direction;
 import core.game.Camera;
 import gameObject.CollisionArea;
@@ -15,6 +18,7 @@ import gfx.ImageLoader;
 import gfx.Spritesheet;
 import main.GamePanel;
 import tile.TileMap;
+import ui.DebugWindow;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -23,12 +27,15 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class GameStatePlayState extends GameState {
 
+    // UI
+    private DebugWindow debugWindow;
+
     // GRAPHICS
     private Spritesheet spritesheetObjects;
+    private Spritesheet playerSpritesheet;
     private Player player;
     private TileMap tileMap;
     private Camera camera;
@@ -36,6 +43,10 @@ public class GameStatePlayState extends GameState {
     // TEST OBJECTS
     private Entity staticGameObject;
     private Collection<Entity> entities;
+
+    // PERFORMANCE
+    private long renderTime;
+    private long ticks;
 
     public GameStatePlayState(GameStateManager gameStateManager, GameStateID gameStateID) {
         super(gameStateManager, gameStateID);
@@ -98,6 +109,11 @@ public class GameStatePlayState extends GameState {
         if (keyCode == KeyEvent.VK_F11) {
             GamePanel.debug = !GamePanel.debug;
         }
+
+        // TOGGLE <DEBUGWINDOW>
+        if (keyCode == KeyEvent.VK_F4) {
+            debugWindow.setVisible(!debugWindow.isVisible());
+        }
     }
 
     public void mouseDragged(MouseEvent e) {}
@@ -112,20 +128,105 @@ public class GameStatePlayState extends GameState {
 
     public void init() {
 
-        spritesheetObjects = new Spritesheet("objects/objects.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
-        spritesheetObjects.load();
-
         // TODO: Dient aktuell lediglich zu Testzwecken.
-        final BufferedImage playerImageScaled = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
-
-        // CREATE PLAYER
-        player = new Player(100, 100, playerImageScaled.getWidth(), playerImageScaled.getHeight(), 3);
-        player.setEntityRenderer(new ImageEntityRenderer(player, playerImageScaled));
-        player.setCollisionArea(new CollisionArea(109, 128, 30, 20));
+        //final BufferedImage playerImageScaled = BufferedImageHelper.scale(ImageLoader.loadImage("player/player.png"), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
 
         entities = new ArrayList<Entity>();
 
-        // CREATE DUMMY OBJECTS
+        loadImages();
+        setup();
+
+    }
+
+    private void loadImages() {
+
+        spritesheetObjects = new Spritesheet("objects/objects.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        spritesheetObjects.load();
+
+        playerSpritesheet = new Spritesheet("player/testCharacter/playerSpritesheet.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        playerSpritesheet.load();
+
+    }
+
+    private void setup()  {
+
+        setupEntities();
+        setupPlayer();
+        setupTileMap();
+        setupCamera();
+        setupUI();
+
+    }
+
+    private void setupPlayer() {
+
+        final int frameDelay = 30;
+        final AnimationPlayer animationPlayer = new AnimationPlayer();
+
+        // IDLE
+        animationPlayer.addAnimation(new Animation(
+                new BufferedImage[]{
+                        playerSpritesheet.getImageByIndex(0),
+                        playerSpritesheet.getImageByIndex(1)}, frameDelay, AnimationID.IDLE));
+
+        // RIGHT
+        animationPlayer.addAnimation(new Animation(
+                new BufferedImage[]{
+                        playerSpritesheet.getImageByIndex(8),
+                        playerSpritesheet.getImageByIndex(9)}, frameDelay, AnimationID.RIGHT));
+
+        // LEFT
+        animationPlayer.addAnimation(new Animation(
+                new BufferedImage[]{
+                        playerSpritesheet.getImageByIndex(10),
+                        playerSpritesheet.getImageByIndex(11)}, frameDelay, AnimationID.LEFT));
+
+        // UP
+        animationPlayer.addAnimation(new Animation(
+                new BufferedImage[]{
+                        playerSpritesheet.getImageByIndex(12)}, frameDelay, AnimationID.UP));
+
+        // DOWN
+        animationPlayer.addAnimation(new Animation(
+                new BufferedImage[]{
+                        playerSpritesheet.getImageByIndex(13)}, frameDelay, AnimationID.DOWN));
+
+        animationPlayer.setAnimation(AnimationID.IDLE);
+        //animationPlayer.play();
+
+        player = new Player(100, 100, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE, 3);
+        //player.setEntityRenderer(new ImageEntityRenderer(player, playerSpritesheet.getImageByIndex(0)));
+        player.setCollisionArea(new CollisionArea(109, 128, 30, 20));
+        player.setAnimationPlayer(animationPlayer);
+
+
+        entities.add(player);
+
+    }
+
+    private void setupTileMap() {
+
+        // CREATE TILEMANAGER
+        tileMap = new TileMap(GamePanel.ORIG_TILE_SIZE);
+        tileMap.load();
+
+    }
+
+    private void setupCamera() {
+
+        // CREATE CAMERA - FOSUC CAMERA ON PLAYER
+        camera = new Camera(
+                0,
+                0,
+                GamePanel.SCREEN_WIDTH,
+                GamePanel.SCREEN_HEIGHT,
+                new Dimension(tileMap.getWidthInTiles() * GamePanel.TILE_SIZE, tileMap.getHeightInTiles() * GamePanel.TILE_SIZE));
+
+        camera.focusOn(player);
+
+    }
+
+    private void setupEntities() {
 
         // STATIC GAME OBJECT.
         staticGameObject = new Dummy(300, 150, 38, 38, 0);
@@ -146,28 +247,27 @@ public class GameStatePlayState extends GameState {
                         5 * GamePanel.SCALE,
                         3 * GamePanel.SCALE));
 
-        // Add entities as game objects.
         entities.add(staticGameObject);
         entities.add(potion);
         entities.add(singleTree);
-        entities.add(player);
+    }
 
-        // CREATE TILEMANAGER
-        tileMap = new TileMap(GamePanel.ORIG_TILE_SIZE);
-        tileMap.load();
+    private void setupUI() {
 
-        // CREATE CAMERA - FOSUC CAMERA ON PLAYER
-        camera = new Camera(
+        final int windowHeightInTileSize = 3;
+
+        debugWindow = new DebugWindow(
                 0,
-                0,
+                GamePanel.TILE_SIZE * (GamePanel.MAX_SCREEN_ROWS - windowHeightInTileSize),
                 GamePanel.SCREEN_WIDTH,
-                GamePanel.SCREEN_HEIGHT,
-                new Dimension(tileMap.getWidthInTiles() * GamePanel.TILE_SIZE, tileMap.getHeightInTiles() * GamePanel.TILE_SIZE));
+                GamePanel.TILE_SIZE * windowHeightInTileSize);
 
-        camera.focusOn(player);
+        debugWindow.setPlayer(player);
     }
 
     public void update() {
+
+        long startTime = System.nanoTime();
 
         handlePlayerTileManagerTilesCollision();
 
@@ -176,6 +276,9 @@ public class GameStatePlayState extends GameState {
         entities.stream().forEach(e -> e.update());
 
         handlerPlayerTileManagerBorderCollision();
+
+        debugWindow.setUpdateTime(System.nanoTime() - startTime);
+        debugWindow.setNumOfEntities(entities.size());
 
     }
 
@@ -237,6 +340,8 @@ public class GameStatePlayState extends GameState {
 
     public void draw(Graphics2D g2D) {
 
+        long startTime = System.nanoTime();
+
         tileMap.draw(g2D, camera);
 
 
@@ -244,6 +349,10 @@ public class GameStatePlayState extends GameState {
                 .stream()
                 .sorted((e1, e2) -> new Integer(e1.getYBottom()).compareTo(e2.getYBottom()))
                 .forEach(e -> e.draw(g2D, camera));
+
+
+        debugWindow.setDrawTime(System.nanoTime() - startTime);
+        debugWindow.draw(g2D);
 
     }
 

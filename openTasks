@@ -1,0 +1,28 @@
+
+OFFENE AUFGABEN
+* Implement animation
+* Implement simple UI for getting debug information
+* Refactor code if necessary.
+* Laden der Assets zentralisieren. EVentuell könnte man das in einem LoadingState lösen und testen.
+
+AKTUELLE AUFGABE
+[] Implementierung einer einfachen <ANIMATION> class.
+    * IDEE:
+        Kann man die Animationen ähnlich wie den GameState bzw. GameStateManager aufbauen?
+        D.h. es gibt einen State IDLE und einen State MOVE. Es gibt dabei noch eine Transition zwischen den beiden (wie definiert man hierbei die Transition?).
+
+FRAGEN:
+Das Rendern übernimmt aktuell der EntityRenderer. Könnte man eventuell die Klasse <ANIMATION> das Interface <EntityRenderer> implementieren lassen?
+
+
+
+
+GRAFIK-PAKET STAMMT VON:
+QUELLE: https://cupnooble.itch.io/sprout-lands-asset-pack
+QUELLE FÜR MEHR: https://itch.io/game-assets/tag-pixel-art
+
+size: 192 x 192
+cols: 4
+rows: 4
+
+dim / cell: 48 x 48
