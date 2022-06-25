@@ -2,8 +2,6 @@ package tile;
 
 import animation.Direction;
 import core.game.Camera;
-import core.game.Game;
-import gameObject.CollisionArea;
 import gameObject.entity.MovableEntity;
 import gfx.BufferedImageHelper;
 import gfx.ImageLoader;
@@ -17,6 +15,7 @@ import java.io.InputStreamReader;
 
 public class TileMap {
 
+    private TileHighlighter tileHighlighter;
     private Tile[] tiles;
     private short[][] world;
 
@@ -30,6 +29,12 @@ public class TileMap {
 
         world = new short[50][50];
 
+        tileHighlighter = new TileHighlighter(GamePanel.TILE_SIZE, 4);
+        tileHighlighter.activate();
+    }
+
+    public void highlight(int x, int y) {
+        tileHighlighter.highlight(getColFromX(x), getRowFromY(y));
     }
 
     public boolean intersects(final MovableEntity movableEntity, final Direction checkDirection) {
@@ -86,7 +91,7 @@ public class TileMap {
         loadMap("/maps/map01.txt");
     }
 
-    public void loadTiles(final String path) {
+    private void loadTiles(final String path) {
 
         final BufferedImage spritesheet = ImageLoader.loadImage(path);
 
@@ -96,7 +101,7 @@ public class TileMap {
         tiles[3] = new Tile(BufferedImageHelper.scale(spritesheet.getSubimage( 3 * imageTileSize, 0, imageTileSize, imageTileSize), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE), true, 3);    // TREE
     }
 
-    public void loadMap(final String path) {
+    private void loadMap(final String path) {
 
         try {
 
@@ -125,6 +130,14 @@ public class TileMap {
 
     }
 
+    private int getColFromX(int x) {
+        return x / GamePanel.TILE_SIZE;
+    }
+
+    private int getRowFromY(int y) {
+        return y / GamePanel.TILE_SIZE;
+    }
+
     public void draw(Graphics2D g2D, Camera camera) {
 
         final int offset = 1;
@@ -149,7 +162,6 @@ public class TileMap {
                         null);
 
                 if (GamePanel.debug) {
-                    // TODO: RENDER TILE BORDER.
                     g2D.setColor(Color.MAGENTA);
                     g2D.drawRect(
                             col * GamePanel.TILE_SIZE - camera.getX(),
@@ -160,6 +172,8 @@ public class TileMap {
                 }
             }
         }
+
+        tileHightlighter.draw(g2D, camera);
     }
 
     public int getWidthInTiles() {

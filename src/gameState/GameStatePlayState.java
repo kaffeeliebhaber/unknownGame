@@ -124,6 +124,8 @@ public class GameStatePlayState extends GameState {
             //System.out.println("MouseX: " + e.getX() + ", MouseY: " + e.getY());
         }
 
+        tileMap.hightlight(e.getX(), e.getY());
+
     }
 
     public void init() {
