@@ -1,6 +1,5 @@
 package gameState;
 
-import core.game.Game;
 
 import java.awt.event.KeyEvent;
 

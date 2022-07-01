@@ -3,12 +3,10 @@ package tile;
 import animation.Direction;
 import core.game.Camera;
 import gameObject.entity.MovableEntity;
-import gfx.BufferedImageHelper;
-import gfx.ImageLoader;
-import main.GamePanel;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,23 +16,56 @@ public class TileMap {
     private TileHighlighter tileHighlighter;
     private Tile[] tiles;
     private short[][] world;
+    private final int tileSize;
+    private boolean debugMode;
 
-    private final int imageTileSize;
+    public TileMap(final int tileSize, final int worldTilesX, final int worldTilesY, final String mapPath) {
 
-    public TileMap(final int imageTileSize) {
+        this.tileSize = tileSize;
 
-        this.imageTileSize = imageTileSize;
+        world = new short[worldTilesX][worldTilesY];
 
-        tiles = new Tile[10];
-
-        world = new short[50][50];
-
-        tileHighlighter = new TileHighlighter(GamePanel.TILE_SIZE, 4);
-        tileHighlighter.activate();
+        load(mapPath);
     }
 
-    public void highlight(int x, int y) {
-        tileHighlighter.highlight(getColFromX(x), getRowFromY(y));
+    public void setTileHighlighter(final TileHighlighter tileHighlighter) {
+        this.tileHighlighter = tileHighlighter;
+    }
+
+    private boolean hasTileHighlighter() {
+        return tileHighlighter != null;
+    }
+
+    public void toggleTileHighlighter() {
+        if (hasTileHighlighter()) {
+            tileHighlighter.toggleTileHighlighter();
+        }
+    }
+
+    public void activateTileHighlighter() {
+        if (hasTileHighlighter()) {
+            tileHighlighter.activate();
+        }
+    }
+
+    public void deactivateTileHighlighter() {
+        if (hasTileHighlighter()) {
+            tileHighlighter.deactivate();
+        }
+    }
+
+    public void highlight(final Point pointOnScreen) {
+
+        if (hasTileHighlighter()) {
+            tileHighlighter.highlight(
+                    getColFromX((int) pointOnScreen.getX()),
+                    getRowFromY((int) pointOnScreen.getY()));
+        }
+
+    }
+
+    public void setTiles(final Tile[] tiles) {
+        this.tiles = tiles;
     }
 
     public boolean intersects(final MovableEntity movableEntity, final Direction checkDirection) {
@@ -47,36 +78,36 @@ public class TileMap {
         switch (checkDirection) {
             case UP:
 
-                tileXLeft = (short) (movableEntity.getCollisionArea().getX() / GamePanel.TILE_SIZE);
-                tileXRight = (short) (movableEntity.getCollisionArea().getXRight() / GamePanel.TILE_SIZE);
-                tileYTop = (short) (movableEntity.getCollisionAreaYTopAfterMoving() / GamePanel.TILE_SIZE);
+                tileXLeft = (short) (movableEntity.getCollisionArea().getX() / this.tileSize);
+                tileXRight = (short) (movableEntity.getCollisionArea().getXRight() / this.tileSize);
+                tileYTop = (short) (movableEntity.getCollisionAreaYTopAfterMoving() / this.tileSize);
 
                 collision = getTile(tileXLeft, tileYTop).isSolid() || getTile(tileXRight, tileYTop).isSolid();
 
                 break;
             case RIGHT:
 
-                tileXRight = (short) (movableEntity.getCollisionAreaXRightAfterMoving() / GamePanel.TILE_SIZE);
-                tileYTop = (short) (movableEntity.getCollisionArea().getY() / GamePanel.TILE_SIZE);
-                tileYBottom = (short) (movableEntity.getCollisionArea().getYBottom() / GamePanel.TILE_SIZE);
+                tileXRight = (short) (movableEntity.getCollisionAreaXRightAfterMoving() / this.tileSize);
+                tileYTop = (short) (movableEntity.getCollisionArea().getY() / this.tileSize);
+                tileYBottom = (short) (movableEntity.getCollisionArea().getYBottom() / this.tileSize);
 
                 collision = getTile(tileXRight, tileYTop).isSolid() || getTile(tileXRight, tileYBottom).isSolid();
 
                 break;
             case DOWN:
 
-                tileXLeft = (short) (movableEntity.getCollisionArea().getX() / GamePanel.TILE_SIZE);
-                tileXRight = (short) (movableEntity.getCollisionArea().getXRight() / GamePanel.TILE_SIZE);
-                tileYBottom = (short) (movableEntity.getCollisionAreaYBottomAfterMoving() / GamePanel.TILE_SIZE);
+                tileXLeft = (short) (movableEntity.getCollisionArea().getX() / this.tileSize);
+                tileXRight = (short) (movableEntity.getCollisionArea().getXRight() / this.tileSize);
+                tileYBottom = (short) (movableEntity.getCollisionAreaYBottomAfterMoving() / this.tileSize);
 
                 collision = getTile(tileXLeft, tileYBottom).isSolid() || getTile(tileXRight, tileYBottom).isSolid();
 
                 break;
             case LEFT:
 
-                tileXLeft = (short) (movableEntity.getCollisionAreaXLeftAfterMoving() / GamePanel.TILE_SIZE);
-                tileYTop = (short) (movableEntity.getCollisionArea().getY() / GamePanel.TILE_SIZE);
-                tileYBottom = (short) (movableEntity.getCollisionArea().getYBottom() / GamePanel.TILE_SIZE);
+                tileXLeft = (short) (movableEntity.getCollisionAreaXLeftAfterMoving() / this.tileSize);
+                tileYTop = (short) (movableEntity.getCollisionArea().getY() / this.tileSize);
+                tileYBottom = (short) (movableEntity.getCollisionArea().getYBottom() / this.tileSize);
 
                 collision = getTile(tileXLeft, tileYTop).isSolid() || getTile(tileXLeft, tileYBottom).isSolid();
 
@@ -86,22 +117,7 @@ public class TileMap {
         return collision;
     }
 
-    public void load() {
-        loadTiles("tile/tileSetRaw.png");
-        loadMap("/maps/map01.txt");
-    }
-
-    private void loadTiles(final String path) {
-
-        final BufferedImage spritesheet = ImageLoader.loadImage(path);
-
-        tiles[0] = new Tile(BufferedImageHelper.scale(spritesheet.getSubimage(            0, 0, imageTileSize, imageTileSize), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE), false, 0);    // GRAS
-        tiles[1] = new Tile(BufferedImageHelper.scale(spritesheet.getSubimage(        imageTileSize, 0, imageTileSize, imageTileSize), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE), true, 1);    // WATER
-        tiles[2] = new Tile(BufferedImageHelper.scale(spritesheet.getSubimage( 2 * imageTileSize, 0, imageTileSize, imageTileSize), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE), false, 2);    // EARTH
-        tiles[3] = new Tile(BufferedImageHelper.scale(spritesheet.getSubimage( 3 * imageTileSize, 0, imageTileSize, imageTileSize), GamePanel.TILE_SIZE, GamePanel.TILE_SIZE), true, 3);    // TREE
-    }
-
-    private void loadMap(final String path) {
+    private void load(final String path) {
 
         try {
 
@@ -131,22 +147,28 @@ public class TileMap {
     }
 
     private int getColFromX(int x) {
-        return x / GamePanel.TILE_SIZE;
+        return x / this.tileSize;
     }
 
     private int getRowFromY(int y) {
-        return y / GamePanel.TILE_SIZE;
+        return y / this.tileSize;
     }
 
     public void draw(Graphics2D g2D, Camera camera) {
 
+        this.drawTileMap(g2D, camera);
+        this.drawTileHighlighter(g2D, camera);
+
+    }
+
+    private void drawTileMap(Graphics2D g2D, Camera camera) {
         final int offset = 1;
 
-        int minX = (camera.getX() / GamePanel.TILE_SIZE) - offset;
-        int minY = (camera.getY() / GamePanel.TILE_SIZE) - offset;
+        int minX = (camera.getX() / this.tileSize) - offset;
+        int minY = (camera.getY() / this.tileSize) - offset;
 
-        int maxX = ((camera.getX() + camera.getWidth()) / GamePanel.TILE_SIZE) + offset;
-        int maxY = ((camera.getY() + camera.getHeight()) / GamePanel.TILE_SIZE) + offset;
+        int maxX = ((camera.getX() + camera.getWidth()) / this.tileSize) + offset;
+        int maxY = ((camera.getY() + camera.getHeight()) / this.tileSize) + offset;
 
         if (minX < 0) minX = 0;
         if (maxX > getWidthInTiles()) maxX = getWidthInTiles();
@@ -157,23 +179,27 @@ public class TileMap {
             for (int row = minY; row < maxY; row++) {
                 g2D.drawImage(
                         tiles[world[col][row]].getImage(),
-                        col * GamePanel.TILE_SIZE - camera.getX(),
-                        row * GamePanel.TILE_SIZE - camera.getY(),
+                        col * this.tileSize - camera.getX(),
+                        row * this.tileSize - camera.getY(),
                         null);
 
-                if (GamePanel.debug) {
+                if (isInDebugMode()) {
                     g2D.setColor(Color.MAGENTA);
                     g2D.drawRect(
-                            col * GamePanel.TILE_SIZE - camera.getX(),
-                            row * GamePanel.TILE_SIZE - camera.getY(),
-                            GamePanel.TILE_SIZE,
-                            GamePanel.TILE_SIZE
+                            col * this.tileSize - camera.getX(),
+                            row * this.tileSize - camera.getY(),
+                            this.tileSize,
+                            this.tileSize
                     );
                 }
             }
         }
+    }
 
-        tileHightlighter.draw(g2D, camera);
+    private void drawTileHighlighter(Graphics2D g2D, Camera camera) {
+        if (hasTileHighlighter()) {
+            tileHighlighter.draw(g2D, camera);
+        }
     }
 
     public int getWidthInTiles() {
@@ -185,11 +211,11 @@ public class TileMap {
     }
 
     public int getWidth() {
-        return getWidthInTiles() * GamePanel.TILE_SIZE;
+        return getWidthInTiles() * this.tileSize;
     }
 
     public int getHeight() {
-        return getHeightInTiles() * GamePanel.TILE_SIZE;
+        return getHeightInTiles() * this.tileSize;
     }
 
     private Tile getTile(final int col, final int row) {
@@ -198,5 +224,13 @@ public class TileMap {
 
     private short getTileID(final int col, final int row) {
         return world[col][row];
+    }
+
+    public void toggleDebugMode() {
+        debugMode = !debugMode;
+    }
+
+    public boolean isInDebugMode() {
+        return debugMode;
     }
 }

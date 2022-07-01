@@ -36,4 +36,8 @@ public class GameUnknown extends GameBase {
 
     @Override public void mouseMoved(MouseEvent e) { gameStateManager.mouseMoved(e); }
 
+    @Override public void mouseEntered(MouseEvent e) { gameStateManager.mouseEntered(e); }
+
+    @Override public void mouseExited(MouseEvent e) { gameStateManager.mouseExited(e); }
+
 }

@@ -1,6 +1,6 @@
 package gfx;
 
-import main.GamePanel;
+import tile.Tile;
 
 import java.awt.image.BufferedImage;
 
@@ -62,7 +62,7 @@ public class Spritesheet {
         try {
             return subImages[row][col];
         } catch (ArrayIndexOutOfBoundsException e) {
-            //System.out.println("row: " + row + ", col: " + col);
+            System.out.println("row: " + row + ", col: " + col);
         }
         return null;
     }
@@ -73,5 +73,21 @@ public class Spritesheet {
 
     public BufferedImage getSpritesheet() {
         return spritesheet;
+    }
+
+    public int getNumberOfTiles() {
+        return subImages.length * subImages[0].length;
+    }
+
+    public Tile[] convertInTileArray() {
+
+        final int numberOfTiles = getNumberOfTiles();
+        final Tile[] tiles = new Tile[numberOfTiles];
+
+        for (int i = 0; i < numberOfTiles; i++) {
+            tiles[i] = new Tile(getImageByIndex(i), false, i);
+        }
+
+        return tiles;
     }
 }

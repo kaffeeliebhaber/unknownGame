@@ -31,12 +31,18 @@ public abstract class Entity extends GameObject {
         return collisionArea;
     }
 
+    private boolean hasCollisionArea() {
+        return getCollisionArea() != null;
+    }
+
+
     public boolean intersects(final Entity entity) {
         return getCollisionArea().intersects(entity.getCollisionArea());
     }
 
     public boolean intersects(final MovableEntity movableEntity, final Direction movingDirection) {
-        return getCollisionArea().intersects(movableEntity.getCollisionAreaAfterMoving(movingDirection));
+
+        return hasCollisionArea() && getCollisionArea().intersects(movableEntity.getCollisionAreaAfterMoving(movingDirection));
     }
 
 

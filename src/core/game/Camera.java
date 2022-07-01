@@ -95,6 +95,9 @@ public class Camera extends GameObject implements GameObjectPositionChangeListen
         setY(alignY(cY));
     }
 
+    public Point getWorldPointFromScreenPoint(final Point pointOnScreen) {
+        return new Point(getX() + (int) pointOnScreen.getX(), getY() + (int) pointOnScreen.getY());
+    }
 
     @Override
     public void positionChanged(GameObject gameObject, int deltaX, int deltaY) {

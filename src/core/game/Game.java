@@ -15,6 +15,10 @@ public interface Game {
 
     void mouseMoved(MouseEvent e);
 
+    void mouseEntered(MouseEvent e);
+
+    void mouseExited(MouseEvent e);
+
     void update();
 
     void draw(Graphics2D g2D);

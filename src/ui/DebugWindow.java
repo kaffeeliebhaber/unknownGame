@@ -9,11 +9,6 @@ import java.awt.Color;
 
 public class DebugWindow {
 
-
-    // TILES TO RENDER
-    // OBJECTS TO RENDER
-
-
     private final int x, y;
     private final int width, height;
     private final Color backgroundColor = new Color(0, 0, 0, 210);
@@ -83,11 +78,11 @@ public class DebugWindow {
     }
 
     private void drawUpdateTime(final Graphics2D g2D, final int x, final int y) {
-        g2D.drawString(updateTime + " ns", x , y);
+        g2D.drawString("Time for each update: " + updateTime + " ns", x , y);
     }
 
     private void drawDrawTime(final Graphics2D g2D, final int x, final int y) {
-        g2D.drawString(drawTime + " ns", x , y);
+        g2D.drawString("Time for each draw: " + drawTime + " ns", x , y);
     }
 
     private void drawNumOfEntities(final Graphics2D g2D, final int x, final int y) {
@@ -102,10 +97,11 @@ public class DebugWindow {
 
     private void drawGeneralInfo(final Graphics2D g2D, final int x, final int y) {
 
+        g2D.drawString("F1: Toggle tile highlighter.", x , y);
+        g2D.drawString("F5: Focus (camera) on player.", x , y + 20);
+        g2D.drawString("F6: Focus (camera) on static object", x , y + 40);
+        g2D.drawString("F11: Toggle debug mode", x , y + 60);
 
-        g2D.drawString("F5: Focus (camera) on player.", x , y);
-        g2D.drawString("F6: Focus (camera) on static object", x , y + 20);
-        g2D.drawString("F11: Toggle debug mode", x , y + 40);
     }
 
 }

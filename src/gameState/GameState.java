@@ -31,6 +31,10 @@ public abstract class GameState {
 
     public void mouseMoved(MouseEvent e) {}
 
+    public void mouseEntered(MouseEvent e) {}
+
+    public void mouseExited(MouseEvent e) {}
+
     public void update() {}
 
     public void draw(Graphics2D g2D) {}

@@ -37,6 +37,10 @@ public class TileHighlighter {
         this.row = row;
     }
 
+    public void toggleTileHighlighter() {
+        active = !active;
+    }
+
     public void draw(Graphics2D g2D, Camera camera) {
 
         if (isActive()) {

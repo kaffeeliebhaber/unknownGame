@@ -21,6 +21,10 @@ public abstract class GameBase implements Game {
 
     public void mouseMoved(MouseEvent e) {}
 
+    public void mouseEntered(MouseEvent e) {}
+
+    public void mouseExited(MouseEvent e) {}
+
     public void update() {
         gameStateManager.update();
     }

@@ -8,17 +8,18 @@ import core.game.Camera;
 import gameObject.CollisionArea;
 import gameObject.entity.Dummy;
 import gameObject.entity.Entity;
-import gameObject.entity.MovableEntity;
 import gameObject.entity.Player;
+import gameObject.entity.SimpleEntityFactor;
 import gameObject.objects.Potion;
 import gameObject.objects.SingleTree;
 import gameObject.renderer.ImageEntityRenderer;
-import gfx.BufferedImageHelper;
-import gfx.ImageLoader;
 import gfx.Spritesheet;
 import main.GamePanel;
+import tile.Tile;
+import tile.TileHighlighter;
 import tile.TileMap;
 import ui.DebugWindow;
+import ui.MenuPause;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -32,31 +33,25 @@ public class GameStatePlayState extends GameState {
 
     // UI
     private DebugWindow debugWindow;
+    private MenuPause menuPause;
 
     // GRAPHICS
     private Spritesheet spritesheetObjects;
-    private Spritesheet playerSpritesheet;
+    private Spritesheet spritesheetPlayer;
+    private Spritesheet spritesheetTiles;
     private Player player;
     private TileMap tileMap;
     private Camera camera;
 
     // TEST OBJECTS
-    private Entity staticGameObject;
-    private Collection<Entity> entities;
-
-    // PERFORMANCE
-    private long renderTime;
-    private long ticks;
+    private Entity staticGameObject; // TODO: This static object is only for testing purposes.
+    private Collection<Entity> entities; // TODO: Create for each type of entity a new list for collect them.
 
     public GameStatePlayState(GameStateManager gameStateManager, GameStateID gameStateID) {
         super(gameStateManager, gameStateID);
     }
 
     public void keyPressed(final int keyCode) {
-
-        if (keyCode == KeyEvent.VK_ENTER) {
-            gameStateManager.changeTo(GameStateID.PAUSE);
-        }
 
         if (keyCode == KeyEvent.VK_D) {
             player.moveRight(true);
@@ -106,27 +101,44 @@ public class GameStatePlayState extends GameState {
             player.moveDown(false);
         }
 
-        if (keyCode == KeyEvent.VK_F11) {
-            GamePanel.debug = !GamePanel.debug;
+        if (keyCode == KeyEvent.VK_F1) {
+            tileMap.toggleTileHighlighter();
         }
 
-        // TOGGLE <DEBUGWINDOW>
+        if (keyCode == KeyEvent.VK_ENTER) {
+            gameStateManager.changeTo(GameStateID.PAUSE);
+        }
+
+        if (keyCode == KeyEvent.VK_F11) {
+            GamePanel.debug = !GamePanel.debug;
+            tileMap.toggleDebugMode();
+        }
+
         if (keyCode == KeyEvent.VK_F4) {
             debugWindow.setVisible(!debugWindow.isVisible());
+        }
+
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+
+            //System.out.println("(GameStatePlayState.keyReleased) ESC was released.");
+            menuPause.toggleOpen();
+
+        }
+
+        if (keyCode == KeyEvent.VK_UP) {
+            if (menuPause.isOpen()) {
+                menuPause.moveUp();
+            }
+        }
+
+        if (keyCode == KeyEvent.VK_DOWN) {
+            if (menuPause.isOpen()) {
+                menuPause.moveDown();
+            }
         }
     }
 
     public void mouseDragged(MouseEvent e) {}
-
-    public void mouseMoved(MouseEvent e) {
-
-        if (GamePanel.debug) {
-            //System.out.println("MouseX: " + e.getX() + ", MouseY: " + e.getY());
-        }
-
-        tileMap.hightlight(e.getX(), e.getY());
-
-    }
 
     public void init() {
 
@@ -145,9 +157,11 @@ public class GameStatePlayState extends GameState {
         spritesheetObjects = new Spritesheet("objects/objects.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
         spritesheetObjects.load();
 
-        playerSpritesheet = new Spritesheet("player/testCharacter/playerSpritesheet.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
-        playerSpritesheet.load();
+        spritesheetPlayer = new Spritesheet("player/testCharacter/playerSpritesheet.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        spritesheetPlayer.load();
 
+        spritesheetTiles = new Spritesheet("tile/grassTileset.png", GamePanel.ORIG_TILE_SIZE, GamePanel.ORIG_TILE_SIZE, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
+        spritesheetTiles.load();
     }
 
     private void setup()  {
@@ -168,39 +182,45 @@ public class GameStatePlayState extends GameState {
         // IDLE
         animationPlayer.addAnimation(new Animation(
                 new BufferedImage[]{
-                        playerSpritesheet.getImageByIndex(0),
-                        playerSpritesheet.getImageByIndex(1)}, frameDelay, AnimationID.IDLE));
+                        spritesheetPlayer.getImageByIndex(0),
+                        spritesheetPlayer.getImageByIndex(1)}, frameDelay, AnimationID.IDLE_DOWN));
+
+        animationPlayer.addAnimation(new Animation(
+                new BufferedImage[]{
+                        spritesheetPlayer.getImageByIndex(2),
+                        spritesheetPlayer.getImageByIndex(3)}, frameDelay, AnimationID.IDLE_UP));
 
         // RIGHT
         animationPlayer.addAnimation(new Animation(
                 new BufferedImage[]{
-                        playerSpritesheet.getImageByIndex(8),
-                        playerSpritesheet.getImageByIndex(9)}, frameDelay, AnimationID.RIGHT));
+                        spritesheetPlayer.getImageByIndex(8),
+                        spritesheetPlayer.getImageByIndex(9)}, frameDelay, AnimationID.RIGHT));
 
         // LEFT
         animationPlayer.addAnimation(new Animation(
                 new BufferedImage[]{
-                        playerSpritesheet.getImageByIndex(10),
-                        playerSpritesheet.getImageByIndex(11)}, frameDelay, AnimationID.LEFT));
+                        spritesheetPlayer.getImageByIndex(10),
+                        spritesheetPlayer.getImageByIndex(11)}, frameDelay, AnimationID.LEFT));
 
         // UP
         animationPlayer.addAnimation(new Animation(
                 new BufferedImage[]{
-                        playerSpritesheet.getImageByIndex(12)}, frameDelay, AnimationID.UP));
+                        spritesheetPlayer.getImageByIndex(12),
+                        spritesheetPlayer.getImageByIndex(13)}, frameDelay, AnimationID.DOWN));
 
         // DOWN
         animationPlayer.addAnimation(new Animation(
                 new BufferedImage[]{
-                        playerSpritesheet.getImageByIndex(13)}, frameDelay, AnimationID.DOWN));
+                        spritesheetPlayer.getImageByIndex(14),
+                        spritesheetPlayer.getImageByIndex(15)}, frameDelay, AnimationID.UP));
 
-        animationPlayer.setAnimation(AnimationID.IDLE);
+        animationPlayer.setAnimation(AnimationID.IDLE_DOWN);
+
         //animationPlayer.play();
 
         player = new Player(100, 100, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE, 3);
-        //player.setEntityRenderer(new ImageEntityRenderer(player, playerSpritesheet.getImageByIndex(0)));
         player.setCollisionArea(new CollisionArea(109, 128, 30, 20));
         player.setAnimationPlayer(animationPlayer);
-
 
         entities.add(player);
 
@@ -208,9 +228,9 @@ public class GameStatePlayState extends GameState {
 
     private void setupTileMap() {
 
-        // CREATE TILEMANAGER
-        tileMap = new TileMap(GamePanel.ORIG_TILE_SIZE);
-        tileMap.load();
+        tileMap = new TileMap(GamePanel.TILE_SIZE, 50, 50, "/maps/map01.txt");
+        //tileMap.setTileHighlighter(new TileHighlighter(GamePanel.TILE_SIZE, 4));
+        tileMap.setTiles(spritesheetTiles.convertInTileArray());
 
     }
 
@@ -234,24 +254,23 @@ public class GameStatePlayState extends GameState {
         staticGameObject = new Dummy(300, 150, 38, 38, 0);
         staticGameObject.setCollisionArea(new CollisionArea(staticGameObject.getX(), staticGameObject.getY(), staticGameObject.getWidth(), staticGameObject.getHeight()));
 
-        // POTION.
-        Entity potion = new Potion(200, 200, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
-        potion.setEntityRenderer(new ImageEntityRenderer(potion, spritesheetObjects.getImageByIndex(0)));
-        potion.setCollisionArea(new CollisionArea(potion.getX(), potion.getY(), 10 * GamePanel.SCALE, 10 * GamePanel.SCALE));
-
-        // SIMPLE TREE.
-        Entity singleTree = new SingleTree(400, 450, GamePanel.TILE_SIZE, GamePanel.TILE_SIZE);
-        singleTree.setEntityRenderer(new ImageEntityRenderer(singleTree, spritesheetObjects.getImageByIndex(1)));
-        singleTree.setCollisionArea(
-                new CollisionArea(
-                        singleTree.getX() + 5 * GamePanel.SCALE,
-                        singleTree.getY() + GamePanel.TILE_SIZE - 3 * GamePanel.SCALE,
-                        5 * GamePanel.SCALE,
-                        3 * GamePanel.SCALE));
-
         entities.add(staticGameObject);
-        entities.add(potion);
-        entities.add(singleTree);
+        entities.add(SimpleEntityFactor.createPotion(200, 200, spritesheetObjects.getImageByIndex(0)));
+
+        final BufferedImage singleTreeImage = spritesheetObjects.getImageByIndex(1);
+        final int shiftX = 20;
+        final int shiftY = 40;
+
+        entities.add(SimpleEntityFactor.createSingleTree(400 + shiftX + 0 * GamePanel.TILE_SIZE, 450 + shiftY, singleTreeImage));
+        entities.add(SimpleEntityFactor.createSingleTree(400 + shiftX + 1 * GamePanel.TILE_SIZE, 450 + shiftY, singleTreeImage));
+        entities.add(SimpleEntityFactor.createSingleTree(400 + shiftX + 2 * GamePanel.TILE_SIZE, 450 + shiftY, singleTreeImage));
+        entities.add(SimpleEntityFactor.createSingleTree(400 + shiftX + 3 * GamePanel.TILE_SIZE, 450 + shiftY, singleTreeImage));
+
+        entities.add(SimpleEntityFactor.createSingleTree(400 + 0 * GamePanel.TILE_SIZE, 450, singleTreeImage));
+        entities.add(SimpleEntityFactor.createSingleTree(400 + 1 * GamePanel.TILE_SIZE, 450, singleTreeImage));
+        entities.add(SimpleEntityFactor.createSingleTree(400 + 2 * GamePanel.TILE_SIZE, 450, singleTreeImage));
+        entities.add(SimpleEntityFactor.createSingleTree(400 + 3 * GamePanel.TILE_SIZE, 450, singleTreeImage));
+
     }
 
     private void setupUI() {
@@ -265,26 +284,35 @@ public class GameStatePlayState extends GameState {
                 GamePanel.TILE_SIZE * windowHeightInTileSize);
 
         debugWindow.setPlayer(player);
+
+        menuPause = new MenuPause();
     }
 
     public void update() {
 
+        if (menuPause.isOpen()) {
+            menuPause.update();
+            return;
+        }
+
         long startTime = System.nanoTime();
 
-        handlePlayerTileManagerTilesCollision();
+        handlePlayerCollisionTileMap();
 
-        handlePlayerEntityCollision();
+        handlePlayerCollisionEntities();
 
         entities.stream().forEach(e -> e.update());
 
-        handlerPlayerTileManagerBorderCollision();
+        handlePlayerCollisionWorldBounds();
 
         debugWindow.setUpdateTime(System.nanoTime() - startTime);
         debugWindow.setNumOfEntities(entities.size());
 
+
+
     }
 
-    private void handlerPlayerTileManagerBorderCollision() {
+    private void handlePlayerCollisionWorldBounds() {
 
         final CollisionArea playerCollisionArea = player.getCollisionArea();
 
@@ -301,7 +329,7 @@ public class GameStatePlayState extends GameState {
             player.translateY(tileMap.getHeight() - playerCollisionArea.getYBottom());
     }
 
-    private void handlePlayerTileManagerTilesCollision() {
+    private void handlePlayerCollisionTileMap() {
 
         if (player.isMoveUp() && tileMap.intersects(player, Direction.UP))
             player.setCanMoveUp(false);
@@ -316,7 +344,7 @@ public class GameStatePlayState extends GameState {
             player.setCanMoveLeft(false);
     }
 
-    private void handlePlayerEntityCollision() {
+    private void handlePlayerCollisionEntities() {
 
         for (final Entity e : entities) {
 
@@ -342,6 +370,8 @@ public class GameStatePlayState extends GameState {
 
     public void draw(Graphics2D g2D) {
 
+
+
         long startTime = System.nanoTime();
 
         tileMap.draw(g2D, camera);
@@ -356,6 +386,17 @@ public class GameStatePlayState extends GameState {
         debugWindow.setDrawTime(System.nanoTime() - startTime);
         debugWindow.draw(g2D);
 
+        if (menuPause.isOpen()) {
+            menuPause.draw(g2D);
+        }
+
+
     }
+
+    @Override public void mouseMoved(MouseEvent e) { tileMap.highlight(camera.getWorldPointFromScreenPoint(e.getPoint())); }
+
+    @Override public void mouseEntered(MouseEvent e) { tileMap.activateTileHighlighter(); }
+
+    @Override public void mouseExited(MouseEvent e) { tileMap.deactivateTileHighlighter(); }
 
 }

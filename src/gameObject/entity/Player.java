@@ -4,7 +4,7 @@ import animation.AnimationID;
 import animation.AnimationPlayer;
 import core.game.Camera;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 
 public class Player extends MovableEntity {
 
@@ -21,6 +21,14 @@ public class Player extends MovableEntity {
     public void update() {
 
         super.update();
+
+        updateAnimationPlayer();
+
+    }
+
+    private void updateAnimationPlayer() {
+
+        if (!hasAnimationPlayer()) return;
 
         // UP
         if (isMoveUp() && canMoveUp()) {
@@ -43,18 +51,24 @@ public class Player extends MovableEntity {
         }
 
         if (!isMoving()) {
-            animationPlayer.setAnimation(AnimationID.IDLE);
+            if (animationPlayer.getCurrentAnimation().getAnimationID() == AnimationID.UP) {
+                animationPlayer.setAnimation(AnimationID.IDLE_UP);
+            } else {
+                animationPlayer.setAnimation(AnimationID.IDLE_DOWN);
+            }
+
         }
 
-        if (animationPlayer != null) {
-            animationPlayer.update();
-        }
+        animationPlayer.update();
+    }
 
+    private boolean hasAnimationPlayer() {
+        return animationPlayer != null;
     }
 
     public void draw(Graphics2D g2D, Camera camera) {
 
-        if (animationPlayer == null) {
+        if (!hasAnimationPlayer()) {
             super.draw(g2D, camera);
         } else {
             g2D.drawImage(animationPlayer.getImage(), getX() - camera.getX(), getY() - camera.getY(), null);

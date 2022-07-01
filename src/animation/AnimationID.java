@@ -2,6 +2,6 @@ package animation;
 
 public enum AnimationID {
 
-    IDLE, LEFT, RIGHT, UP, DOWN;
+    IDLE_UP, IDLE_DOWN, LEFT, RIGHT, UP, DOWN;
 
 }

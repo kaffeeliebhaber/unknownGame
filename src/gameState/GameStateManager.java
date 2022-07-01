@@ -70,6 +70,18 @@ public final class GameStateManager {
         }
     }
 
+    public void mouseEntered(MouseEvent e) {
+        if (isCurrentGameStateConfigured()) {
+            currentGameState.mouseEntered(e);
+        }
+    }
+
+    public void mouseExited(MouseEvent e) {
+        if (isCurrentGameStateConfigured()) {
+            currentGameState.mouseExited(e);
+        }
+    }
+
     public void keyPressed(final int keyCode) {
         if (isCurrentGameStateConfigured()) {
             currentGameState.keyPressed(keyCode);

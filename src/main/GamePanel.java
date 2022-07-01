@@ -46,8 +46,12 @@ public class GamePanel extends JPanel implements Runnable {
         this.requestFocus();
 
         // CREATE AND REGISTER KEYLISTENER.
-        this.addKeyListener(new KeyHandler(game));
-        this.addMouseMotionListener( new MouseHandler(game));
+        final KeyHandler keyHandler = new KeyHandler(game);
+        final MouseHandler mouseHandler = new MouseHandler(game);
+
+        addKeyListener(keyHandler);
+        addMouseMotionListener(mouseHandler);
+        addMouseListener(mouseHandler);
 
         // WE MAKE SURE GAME WILL BE INIT CORRECTLY.
         game.init();
@@ -88,9 +92,13 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (timer >= 1000000000) {
 
+                /*
+
                 if (debug) {
                     System.out.println("FPS: " + drawCount);
                 }
+
+                 */
 
                 drawCount = 0;
                 timer = 0;
