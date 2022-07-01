@@ -1,20 +1,54 @@
 
-OFFENE AUFGABEN
-* Implement animation
-* Implement simple UI for getting debug information
-* Refactor code if necessary.
-* Laden der Assets zentralisieren. EVentuell könnte man das in einem LoadingState lösen und testen.
+------------------------------------------------------------------------------------------------------------
+
 
 AKTUELLE AUFGABE
-[] Implementierung einer einfachen <ANIMATION> class.
-    * IDEE:
-        Kann man die Animationen ähnlich wie den GameState bzw. GameStateManager aufbauen?
-        D.h. es gibt einen State IDLE und einen State MOVE. Es gibt dabei noch eine Transition zwischen den beiden (wie definiert man hierbei die Transition?).
-
-FRAGEN:
-Das Rendern übernimmt aktuell der EntityRenderer. Könnte man eventuell die Klasse <ANIMATION> das Interface <EntityRenderer> implementieren lassen?
+[] OPTION MENU
 
 
+
+------------------------------------------------------------------------------------------------------------
+
+
+
+# LOADING STATE
+[] Es muss einen AssertsLoader geben, der soweit alle Grafiken, Sounds etc läd.
+[] Es muss einen Ladenscreen geben, der auch anzeigt, dass gewisse Informationen geladen werden.
+[] Es muss ein einfaches Menü geben (Neu, Einstellungen, Beenden)
+[] Laden der Assets zentralisieren. EVentuell könnte man das in einem LoadingState lösen und testen.
+
+# TILEMAP
+
+[x] Es muss die Möglichkeit geben, eine Pfad für die Tiles direkt mitzugeben.
+[x] Der TileHighlighter darf auch 'null' sein.
+[x] Es muss die Größe (in Tiles) angegeben werden können. Aktuell noch statisch in der Klasse
+[x] Es muss die Anzahl der verschiedenen Tiles angegeben werden können. Aktuell noch statisch.
+
+# ANIMATION
+
+[x] Implement animation
+[x] Implement simple UI for getting debug information
+[] Refactor code if necessary.
+
+# OPTION MENU
+[] Druck 'ESC' Taste lässt das 'OPTIONS' Menü öffnen
+    [] Das Spiel pausiert in diesem Moment.
+    [] Eventuell verschiedene States implementieren
+        Note:
+            * Gerade im Options Menü
+            * Geöffneter Dialog etc
+
+
+------------------------------------------------------------------------------------------------------------
+
+
+AKTUELLE AUFGABE
+[] # OPTION MENU
+
+
+
+------------------------------------------------------------------------------------------------------------
+QUELLEN:
 
 
 GRAFIK-PAKET STAMMT VON:
@@ -25,4 +59,10 @@ size: 192 x 192
 cols: 4
 rows: 4
 
-dim / cell: 48 x 48
+
+Grass.png
+160 px x 128 px => 10 Tiles x 8 Tiles
+
+16 x 16
+
+
